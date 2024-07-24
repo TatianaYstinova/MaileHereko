@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
-import './film.scss'
-import logo from '../../assets/logoImg/Frame 82.png'
+import './FilmPage.scss'
+
 
 import { MovieDtoV13 } from "@openmoviedb/kinopoiskdev_client";
 
@@ -11,22 +11,11 @@ import { TOKEN } from '../../shared/kp-client'
 import { FilmCard } from '../../components/FilmCard'
 import { getMovieById } from "../../entities/movie";
 import { getFavorites, Favorite, addToFavorites, deleteFromFavorites as deleteFromFavoritesApi } from '../../entities/favorites';
-import { Navbar } from "../../components/Navbar";
+
 import { StyleButton } from "../../components/Navbar/styles";
+import { Navbar } from "../../components/Navbar";
 
-const navigationMenuLinkName = [
-  {
-    title: 'Movie'
-  },
-  {
-    title: 'Catalog'
-  },
-  {
-    title: 'Sign in ->',
 
-  }
-
-];
 
 export const FilmPage = () => {
   const [movie, setMovie] = useState<MovieDtoV13 | null>(null);
@@ -75,14 +64,20 @@ export const FilmPage = () => {
     }
   }
 
+  const toggleFavorite = async () => {
+    if (!movie) return;
+
+    if (isInFavorites) {
+      deleteFromFavorites();
+    } else {
+      addFavorites();
+    }
+
+  }
+
   return (
     <>
-      <div className='header-container'>
-        <img className='logo' src={logo} alt='picture logo' />
-        <div className='menu-navigation'>
-          {navigationMenuLinkName.map((element) => <Navbar title={element.title} />)}
-        </div>
-      </div>
+      <Navbar />
       <div className="img-container">
         <div className="img-poster">
           <img className='poster-header' src={movie?.poster?.url} alt="poster" />
@@ -96,8 +91,7 @@ export const FilmPage = () => {
         {movie && <FilmCard {...movie} />}
         <StyleButton className="film-button"
           variant="contained"
-          onClick={isInFavorites ? deleteFromFavorites : addFavorites}
-          disabled={!movie}
+          onClick={toggleFavorite}
         >
           {isInFavorites ? 'Удалить из избранного' : 'Добавить в избранное'}
         </StyleButton>
