@@ -30,19 +30,15 @@ const navigationMenuLinkName = [
 
 export const FilmPage = () => {
   const [movie, setMovie] = useState<MovieDtoV13 | null>(null);
-  const [favoriteMovie, setFavorite] = useState<Favorite | null>(null);
+  const [favoriteMovie, setFavoriteMovie] = useState<Favorite | null>(null);
 
   const [favorites, setFavorites] = useState<Favorite[] | null>(null);
 
   useEffect(() => {
     getMovieById(1263772).then((response) => setMovie(response.data));
-  }, [setMovie]);
+  }, []);
 
   useEffect(() => {
-    // сейчас эта функция возвращает избранные фильмы ВСЕХ пользователей
-    // а нужно возвращать фильмы только текущего пользователя
-    // текущего пользователя идентифицирует TOKEN
-    // соответственно надо понять, как составить запрос к json-server с фильтром по userId === TOKEN из списка избранных фильмов
     getFavorites(TOKEN).then(favorites => setFavorites(favorites));
   }, [setFavorites]);
 
@@ -54,13 +50,13 @@ export const FilmPage = () => {
 
       if (favorite) {
         setIsInFavorites(true);
-        setFavorite(favorite);
+        setFavoriteMovie(favorite);
       } else {
         setIsInFavorites(false);
-        setFavorite(null);
+        setFavoriteMovie(null);
       }
     }
-  }, [movie, favorites, setIsInFavorites, setFavorite]);
+  }, [movie, favorites]);
 
   const addFavorites = async () => {
     if (movie) {
