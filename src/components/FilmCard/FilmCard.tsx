@@ -3,6 +3,8 @@ import { MovieDtoV13 } from '@openmoviedb/kinopoiskdev_client';
 import React from 'react';
 import star from '../../assets/star.png';
 
+
+
 export const FilmCard: React.FC<MovieDtoV13> = ({
   rating,
   slogan,
@@ -29,7 +31,7 @@ export const FilmCard: React.FC<MovieDtoV13> = ({
         <div className='year'>Год выпуска: {year}</div>
         <div className='movieLength'>Длина фильма : {movieLength?.toString()} мин.</div>
         <div className='genres'>Жанр: {genres?.map((genre) => genre.name)}</div>
-        <div className='countries'>Страна: {countries?.map((countrie) => countrie.name)}</div>
+        <div className='countries'>Страна: {countries?.map((country) => country.name)}</div>
       </div>
     </div>
 
