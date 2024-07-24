@@ -30,7 +30,7 @@ const navigationMenuLinkName = [
 
 export const FilmPage = () => {
   const [movie, setMovie] = useState<MovieDtoV13 | null>(null);
-  const [favorite, setFavorite] = useState<Favorite | null>(null);
+  const [favoriteMovie, setFavorite] = useState<Favorite | null>(null);
 
   const [favorites, setFavorites] = useState<Favorite[] | null>(null);
 
@@ -72,9 +72,9 @@ export const FilmPage = () => {
   }
 
   const deleteFromFavorites = async () => {
-    if (favorite) {
+    if (favoriteMovie) {
       deleteFromFavoritesApi({
-        id: favorite.id
+        id: favoriteMovie.id
       }).then(() => getFavorites(TOKEN).then(favorites => setFavorites(favorites)))
     }
   }
