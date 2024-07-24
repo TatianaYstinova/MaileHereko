@@ -10,7 +10,7 @@ import { Button, CircularProgress } from "@mui/material";
 import { TOKEN } from '../../shared/kp-client'
 import { FilmCard } from '../../components/FilmCard'
 import { getMovieById } from "../../entities/movie";
-import { getFavorites, Favorite, addToFavorites, deleteFromFavorites as deleteFromFavoritesApi } from '../../entities/favorites';
+import { getFavorites, FavoriteMovie, addToFavorites, deleteFromFavorites as deleteFromFavoritesApi } from '../../entities/favorites';
 
 import { StyleButton } from "../../components/Navbar/styles";
 import { Navbar } from "../../components/Navbar";
@@ -19,9 +19,9 @@ import { Navbar } from "../../components/Navbar";
 
 export const FilmPage = () => {
   const [movie, setMovie] = useState<MovieDtoV13 | null>(null);
-  const [favoriteMovie, setFavoriteMovie] = useState<Favorite | null>(null);
+  const [favoriteMovie, setFavoriteMovie] = useState<FavoriteMovie | null>(null);
 
-  const [favorites, setFavorites] = useState<Favorite[] | null>(null);
+  const [favorites, setFavorites] = useState<FavoriteMovie[] | null>(null);
 
   useEffect(() => {
     getMovieById(1263772).then((response) => setMovie(response.data));
