@@ -26,7 +26,7 @@ export const FilmCard: React.FC<MovieDtoV13> = ({
       <div className='poster-info'>
         <div className='slogan'>{slogan}</div>
         <div className='description'>Описание: {description}</div>
-        <div className='rating'><img src={star} alt='star' />{rating?._await?.toFixed()}</div>
+        <div className='rating'><img src={star} alt='star' />{rating?._await}</div>
         <div className='type'>Тип: {type}</div>
         <div className='year'>Год выпуска: {year}</div>
         <div className='movieLength'>Длина фильма : {movieLength?.toString()} мин.</div>
