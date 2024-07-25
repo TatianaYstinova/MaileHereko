@@ -182,4 +182,30 @@
 
 }
 
-.film-button {}
+.button-container {
+    position: relative;
+    flex-direction: row;
+    justify-content: space-around;
+    display: flex;
+}
+
+.modal-style-box {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    background-color: aliceblue;
+    box-shadow: 24px;
+    border: 2px solid #000;
+
+}
+.picture-modal{
+    display: flex;
+    left: 122px;
+    position: relative;
+}
+.picture-modal-title{
+    display: flex;
+    justify-content: center;
+}
