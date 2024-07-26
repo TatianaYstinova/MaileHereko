@@ -1,5 +1,7 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import theme from "./theme";
+import "./index.css";
 
 import './Pages/FilmPage/FilmPage.scss';
 import './Pages/HomePage/HomePage.scss';
@@ -25,4 +27,4 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <App/>
     </ThemeProvider>
   </React.StrictMode>
-)
+);
