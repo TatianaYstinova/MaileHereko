@@ -24,7 +24,6 @@ export function Navbar() {
         }} href="#" underline="hover">Sign in <img src={shooter} alt='shooter' /></Link>
       </div>
     </div>
-
   )
 }
 
