@@ -3,12 +3,11 @@ import ReactDOM from 'react-dom/client'
 
 import './Pages/FilmPage/FilmPage.scss';
 import './Pages/HomePage/HomePage.scss';
-import { Navbar } from './components/Navbar';
 
+import App from './App';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <Navbar/>
-
+   <App/>
   </React.StrictMode>
 )
