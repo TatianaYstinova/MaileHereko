@@ -41,7 +41,13 @@ const theme = createTheme({
         },
       },
     },
+    MuiLink: {
+      defaultProps: {
+        color: '#fff',
+      }
   },
+  },
+ 
 });
 
 export default theme;
