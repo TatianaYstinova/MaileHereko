@@ -68,7 +68,7 @@ export const FilmPage = () => {
     }
   }
 
-  const [IsOpenModalFavoriteMovie, setIsOpenModalFavoriteMovie] = useState<boolean>(false);
+  const [isOpenModalFavoriteMovie, setIsOpenModalFavoriteMovie] = useState<boolean>(false);
 
   const toggleFavorite = async () => {
     if(isInFavorites){
@@ -105,7 +105,7 @@ export const FilmPage = () => {
             {isInFavorites ? 'Удалить из избранного' : 'Добавить в избранное'}
           </Button>
           <Modal
-            open={IsOpenModalFavoriteMovie}
+            open={isOpenModalFavoriteMovie}
             onClose={handleClose}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
