@@ -1,7 +1,7 @@
+
 import FormControl from "@mui/material/FormControl";
 import Icon from "@mui/material/Icon";
 import Input from "@mui/material/Input";
-import InputLabel from "@mui/material/InputLabel";
 
 import EmailIcon from '@mui/icons-material/Email';
 import KeyIcon from '@mui/icons-material/Key';
@@ -11,9 +11,10 @@ import { InputAdornment } from "@mui/material";
 import { useState } from "react";
 import './LoginPage.scss';
 
-export function LoginPageComponent() {
+export function EmailAndPasswordComponent() {
   const [showPassword, setShowPassword] = useState(false);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleClickShowPassword = () => setShowPassword((show: any) => !show);
 
   const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -22,11 +23,8 @@ export function LoginPageComponent() {
 
   return (
     <>
-      <FormControl variant="standard">
-        <InputLabel htmlFor="input-with-icon-adornment">
-          Email
-        </InputLabel>
-        <Input
+      <FormControl variant="standard" >
+        <Input placeholder="Email"
           id="input-with-icon-adornment"
           className='email-input'
           startAdornment={<>
@@ -35,10 +33,7 @@ export function LoginPageComponent() {
             </Icon>
           </>} />
       </FormControl><FormControl variant="standard">
-        <InputLabel htmlFor="input-with-icon-adornment">
-          Password
-        </InputLabel>
-        <Input
+        <Input placeholder="Password"
           id="standard-adornment-password"
           className='password-input'
           type={showPassword ? 'text' : 'password'}

@@ -1,3 +1,3 @@
-export {LoginPageComponent} from './LoginPage'
+export {EmailAndPasswordComponent} from './LoginPage'
 
 

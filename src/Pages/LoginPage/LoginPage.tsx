@@ -6,7 +6,7 @@ import Saly from '../../assets/Saly-11.png';
 
 import Button from '@mui/material/Button/Button';
 import { Typography} from '@mui/material';
-import  {LoginPageComponent}  from '../../components/LoginPage/index';
+import  {EmailAndPasswordComponent}  from '../../components/LoginPage/index';
 
 
 
@@ -25,8 +25,8 @@ export const LoginPage = () => {
         </div >
         <div className='form-container'>
           <div className='header-form-container'>Sing In</div>
-          <LoginPageComponent/>
-          <Button className='button-form-container' variant="contained">Sing in</Button>
+          <EmailAndPasswordComponent/>
+          <Button className='button-form-container' variant="contained" sx={{top:26,width: 486,height: 56}}>Sing in</Button>
         </div>
       </div>
     </Typography >

@@ -1,13 +1,29 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-import './Pages/FilmPage/FilmPage.scss';
-import './Pages/HomePage/HomePage.scss';
+import "./Pages/FilmPage/FilmPage.scss";
+import "./Pages/HomePage/HomePage.scss";
 
-import App from './App';
+import App from "./App";
+import { Navbar } from "./components/Navbar";
+import LoginPage from "./Pages/LoginPage/LoginPage";
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-   <App/>
+    <BrowserRouter>
+      <Navbar />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              <App />
+            </>
+          }
+        />
+        <Route path="sing-in" element={<LoginPage/>}/>
+      </Routes>
+    </BrowserRouter>
   </React.StrictMode>
-)
+);
