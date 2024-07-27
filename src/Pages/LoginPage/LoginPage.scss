@@ -1,0 +1,48 @@
+.logo-container {
+    position: relative;
+    display: flex;
+    height: 80px;
+    justify-content: center;
+
+}
+
+.info-container-login-page {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    padding: 40px 120px;
+}
+
+.header-form-container {
+    font-family: "Poppins";
+    font-weight: 600;
+    font-size: 64px             ;
+    line-height: 80px;
+}
+
+.picture-Saly {
+    position: relative;
+    width: 468px;
+    height: 560px;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    width: 486px;
+    height: 360px;
+    left: 125px;
+}
+
+.button-form-container :before {
+    position: relative;
+    width: 486px;
+    height: 56px;
+    display: flex;
+    justify-content: end;
+    top: 19px;
+    background-color: aquamarine;
+}
+
