@@ -9,24 +9,30 @@ import {
 } from "@mui/material";
 import starIcon from "../../assets/star.svg";
 
-export default function ActionAreaCar() {
+interface ActionAreaCarProps {
+  starNumber:number | "Нет оценок";
+  image:string;
+  text:string;
+}
+
+export default function ActionAreaCar({starNumber,image,text}:ActionAreaCarProps) {
   return (
     <Card sx={{ maxWidth: 180 }}>
       <CardActionArea sx={{ padding: 1 }}>
         <Chip
           className="chip"
           size="small"
-          label="8.5"
+          label={starNumber}
           icon={<img src={starIcon} />}
         />
         <CardMedia
           component="img"
           height="280"
-          image="https://www.kino-teatr.ru/news/22471/199538.jpg"
+          image={image}
         />
         <CardContent>
           <Typography gutterBottom variant="body2" component="div">
-            Lizard
+            {text}
           </Typography>
         </CardContent>
       </CardActionArea>

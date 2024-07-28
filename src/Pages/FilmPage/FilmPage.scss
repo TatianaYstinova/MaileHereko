@@ -209,3 +209,13 @@
     display: flex;
     justify-content: center;
 }
+.container-selection-movies{
+    overflow-x: scroll;
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+    position: relative;
+    border: solid 1px black;
+    white-space: nowrap;
+    top: 104px;
+}

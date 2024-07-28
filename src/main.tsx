@@ -8,6 +8,7 @@ import "./Pages/HomePage/HomePage.scss";
 import App from "./App";
 import { Navbar } from "./components/Navbar";
 import LoginPage from "./Pages/LoginPage/LoginPage";
+import { FilmPage } from "./Pages/FilmPage";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -22,7 +23,8 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             </>
           }
         />
-        <Route path="sing-in" element={<LoginPage/>}/>
+        <Route path="sing-in" element={<LoginPage />} />
+        <Route path="/movie/:id" element={<FilmPage />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
