@@ -27,11 +27,12 @@ import {
   getMoviesSelection,
   MoviesSelection,
 } from "../../entities/moviesSelection";
-import ActionAreaCar from "../../components/CardElement/CardElement";
+
 import Link from "@mui/material/Link/Link";
 import { useParams } from "react-router";
 
 import { AddSimilarMoviesModal } from "../../components/AddSimilarMoviesModal/AddSimilarMoviesModal";
+import CardElement from "../../components/CardElement/CardElement";
 
 export const FilmPage = () => {
   const [movie, setMovie] = useState<MovieDtoV13 | null>(null);
@@ -190,7 +191,7 @@ export const FilmPage = () => {
       <div className="container-selection-movies">
         {similarFromKp?.map(({ poster, rating, name, id }) => (
           <Link href={`/movie/${id}`}>
-            <ActionAreaCar
+            <CardElement
               image={poster?.url || ""}
               starNumber={Number(rating?.kp?.toFixed(1)) || "Нет оценок"}
               text={name || ""}
