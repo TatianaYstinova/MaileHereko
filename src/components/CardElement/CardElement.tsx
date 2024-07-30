@@ -9,13 +9,13 @@ import {
 } from "@mui/material";
 import starIcon from "../../assets/star.svg";
 
-interface ActionAreaCarProps {
+interface CardElementProps {
   starNumber:number | "Нет оценок";
   image:string;
   text:string;
 }
 
-export default function ActionAreaCar({starNumber,image,text}:ActionAreaCarProps) {
+export default function CardElement({starNumber,image,text}:CardElementProps) {
   return (
     <Card sx={{ maxWidth: 180 }}>
       <CardActionArea sx={{ padding: 1 }}>
