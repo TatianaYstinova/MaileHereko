@@ -31,14 +31,26 @@ import ActionAreaCar from "../../components/CardElement/CardElement";
 import Link from "@mui/material/Link/Link";
 import { useParams } from "react-router";
 
+import { AddSimilarMoviesModal } from "../../components/AddSimilarMoviesModal/AddSimilarMoviesModal";
+
 export const FilmPage = () => {
   const [movie, setMovie] = useState<MovieDtoV13 | null>(null);
   const [favoriteMovie, setFavoriteMovie] = useState<FavoriteMovie | null>(
     null
   );
-
+  const [isInFavorites, setIsInFavorites] = useState<boolean>(false);
   const [favorites, setFavorites] = useState<FavoriteMovie[] | null>(null);
   const { id } = useParams();
+  const [isOpenModalFavoriteMovie, setIsOpenModalFavoriteMovie] =
+    useState<boolean>(false);
+  const [selectionMovies, setSelectionMovies] = useState<
+    MoviesSelection[] | null
+  >(null);
+  const [similarFromKp, setSimilarFromKp] = useState<
+    MovieDocsResponseDtoV13["docs"] | null
+  >(null);
+  const [isOpenModalSelectionMovies, setIsOpenModalSelectionMovies] =
+    useState<boolean>(false);
 
   useEffect(() => {
     if (id) {
@@ -50,8 +62,6 @@ export const FilmPage = () => {
   useEffect(() => {
     getFavorites(TOKEN).then((favorites) => setFavorites(favorites));
   }, [setFavorites]);
-
-  const [isInFavorites, setIsInFavorites] = useState<boolean>(false);
 
   useEffect(() => {
     if (favorites && movie) {
@@ -68,6 +78,26 @@ export const FilmPage = () => {
       }
     }
   }, [movie, favorites]);
+
+  useEffect(() => {
+    if (movie) {
+      getMoviesSelection(movie.id).then(setSelectionMovies);
+    }
+  }, [movie]);
+
+  useEffect(() => {
+    if (selectionMovies) {
+      const similarMovieIds = selectionMovies.map(
+        (selectionMovie) => selectionMovie.similarMovieId
+      );
+
+      if (similarMovieIds.length) {
+        getAllMoviesFilter({ id: similarMovieIds }).then((response) =>
+          setSimilarFromKp(response.data?.docs || null)
+        );
+      }
+    }
+  }, [selectionMovies]);
 
   const addFavorites = async () => {
     if (movie) {
@@ -90,10 +120,7 @@ export const FilmPage = () => {
     }
   };
 
-  const [isOpenModalFavoriteMovie, setIsOpenModalFavoriteMovie] =
-    useState<boolean>(false);
-
-  const toggleFavorite = async () => {
+  const toggleFavorite = () => {
     if (isInFavorites) {
       deleteFromFavorites();
     } else {
@@ -106,34 +133,12 @@ export const FilmPage = () => {
   const handleClose = () => {
     setIsOpenModalFavoriteMovie(false);
   };
-
-  const [selectionMovies, setSelectionMovies] = useState<
-    MoviesSelection[] | null
-  >(null); // Состояние для фильмов подборки
-
-  useEffect(() => {
-    if (movie) {
-      getMoviesSelection(movie.id.toString()).then(setSelectionMovies);
-    }
-  }, [movie]);
-
-  const [similarFromKp, setSimilarFromKp] = useState<
-    MovieDocsResponseDtoV13["docs"] | null
-  >(null);
-
-  useEffect(() => {
-    if (selectionMovies) {
-      const similarMovieIds = selectionMovies.map(
-        (selectionMovie) => selectionMovie.similarMovieId
-      );
-
-      if (similarMovieIds.length) {
-        getAllMoviesFilter({ id: similarMovieIds }).then((response) =>
-          setSimilarFromKp(response.data?.docs || null)
-        );
-      }
-    }
-  }, [selectionMovies]);
+  const handleCloseModalSelectionMovies = () => {
+    setIsOpenModalSelectionMovies(false);
+  };
+  const openModalSelectionMovies = () => {
+    setIsOpenModalSelectionMovies(true);
+  };
 
   return (
     <>
@@ -192,6 +197,20 @@ export const FilmPage = () => {
             />
           </Link>
         ))}
+        <Button
+          className="add-film-to-selections "
+          variant="contained"
+          onClick={openModalSelectionMovies}
+        >
+          Добавить фильм
+        </Button>
+        {movie && (
+          <AddSimilarMoviesModal
+            handleCloseModalSelectionMovies={handleCloseModalSelectionMovies}
+            isOpenModalSelectionMovies={isOpenModalSelectionMovies}
+            movieId={movie.id}
+          />
+        )}
       </div>
     </>
   );
