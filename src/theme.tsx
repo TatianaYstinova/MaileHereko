@@ -4,18 +4,7 @@ const theme = createTheme({
   typography: {
     fontFamily: "Poppins, sans-serif",
   },
-  palette: {
-    mode: "dark",
-    primary: {
-      main: "#7B6EF6",
-    },
-    secondary: {
-      main: "#5A4AF4",
-    },
-    text: {
-      primary: "#EBEEF5",
-    },
-  },
+  
   components: {
     MuiTypography: {
       styleOverrides: {
@@ -46,6 +35,7 @@ const theme = createTheme({
         color: '#fff',
       }
   },
+ 
   },
  
 });

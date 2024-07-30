@@ -198,7 +198,6 @@
     background-color: aliceblue;
     box-shadow: 24px;
     border: 2px solid #000;
-
 }
 .picture-modal{
     display: flex;
@@ -208,4 +207,17 @@
 .picture-modal-title{
     display: flex;
     justify-content: center;
+}
+.container-selection-movies{
+    overflow-x: scroll;
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+    position: relative;
+    border: solid 1px black;
+    white-space: nowrap;
+    top: 104px;
+}
+.text-input{
+    width: 300px;
 }
