@@ -7,21 +7,24 @@ import { MovieDocsResponseDtoV13 } from "@openmoviedb/kinopoiskdev_client";
 import { useState } from "react";
 import { getAllMoviesFilter } from "../../entities/movie";
 import Button from "@mui/material/Button";
+import { addToSelectionMovies } from "../../entities/moviesSelection/api";
 import {
-  addToSelectionMovies,
+  MoviesSelection,
   getMoviesSelection,
-} from "../../entities/moviesSelection/api";
+} from "../../entities/moviesSelection";
 
 interface AddSimilarMoviesModalProps {
   isOpenModalSelectionMovies: boolean;
   handleCloseModalSelectionMovies: () => void;
   movieId: number;
+  updateSelectionMovies: (newMovie: MoviesSelection[]) => void;
 }
 
 export function AddSimilarMoviesModal({
   isOpenModalSelectionMovies,
   handleCloseModalSelectionMovies,
-  movieId
+  movieId,
+  updateSelectionMovies,
 }: AddSimilarMoviesModalProps) {
   const [allFilmsFromKp, setAllFilmsFromKp] = useState<
     MovieDocsResponseDtoV13["docs"] | null
@@ -40,7 +43,12 @@ export function AddSimilarMoviesModal({
     if (value) {
       addToSelectionMovies({
         similarMovieId: value.id,
-        movieId
+        movieId: movieId,
+      }).then(() => {
+        getMoviesSelection(movieId).then((response) => {
+          updateSelectionMovies(response);
+          handleCloseModalSelectionMovies();
+        });
       });
     }
   };

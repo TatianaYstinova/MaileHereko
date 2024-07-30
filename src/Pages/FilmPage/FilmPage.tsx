@@ -209,6 +209,7 @@ export const FilmPage = () => {
             handleCloseModalSelectionMovies={handleCloseModalSelectionMovies}
             isOpenModalSelectionMovies={isOpenModalSelectionMovies}
             movieId={movie.id}
+            updateSelectionMovies={setSelectionMovies}
           />
         )}
       </div>
