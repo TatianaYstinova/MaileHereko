@@ -32,7 +32,7 @@ const theme = createTheme({
     },
     MuiLink: {
       defaultProps: {
-        color: '#fff',
+        color: '#ffffff',
       }
   },
  

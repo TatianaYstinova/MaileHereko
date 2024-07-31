@@ -4,9 +4,9 @@ import Logo from '../../assets/logoImg/Frame 82.png';
 import Saly from '../../assets/Saly-11.png';
 
 
-import Button from '@mui/material/Button/Button';
+
 import { Typography} from '@mui/material';
-import  {EmailAndPasswordComponent}  from '../../components/LoginPage/index';
+import  {EmailAndPasswordComponent}  from '../../components/EmailAndPasswordComponent/index';
 
 
 
@@ -24,9 +24,7 @@ export const LoginPage = () => {
           <img src={Saly} alt='picture Saly' />
         </div >
         <div className='form-container'>
-          <div className='header-form-container'>Sing In</div>
           <EmailAndPasswordComponent/>
-          <Button className='button-form-container' variant="contained" sx={{top:26,width: 486,height: 56}}>Sing in</Button>
         </div>
       </div>
     </Typography >

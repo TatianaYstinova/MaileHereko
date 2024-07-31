@@ -1,3 +1,7 @@
+body{
+    background-color: rgba(18, 24, 41, 0.8);
+    
+}
 .logo-container {
     position: relative;
     display: flex;
@@ -36,13 +40,5 @@
     left: 125px;
 }
 
-.button-form-container :before {
-    position: relative;
-    width: 486px;
-    height: 56px;
-    display: flex;
-    justify-content: end;
-    top: 19px;
-    background-color: aquamarine;
-}
+
 
