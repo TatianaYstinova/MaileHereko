@@ -25,7 +25,7 @@ const schema = yup.object().shape({
     .required("Нужно заполнить поле пароля"),
 });
 
-interface IFormInput {
+interface FormInput {
   email: string;
   password: string;
 }
@@ -33,11 +33,7 @@ interface IFormInput {
 export function EmailAndPasswordComponent() {
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword((show: any) => !show);
-  const handleMouseDownPassword = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    event.preventDefault();
-  };
+
   const {
     control,
     handleSubmit,
@@ -49,7 +45,7 @@ export function EmailAndPasswordComponent() {
       password: "",
     },
   });
-  const onSubmit: SubmitHandler<IFormInput> = (data) => {
+  const onSubmit: SubmitHandler<FormInput> = (data) => {
     console.log(data);
   };
 
@@ -97,11 +93,7 @@ export function EmailAndPasswordComponent() {
                 }
                 endAdornment={
                   <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                    >
+                    <IconButton onClick={handleClickShowPassword}>
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
@@ -114,8 +106,10 @@ export function EmailAndPasswordComponent() {
         />
       </FormControl>
       <div className="button-container-login">
-        <button type="submit" className="button-inlet">Вход</button>
-        <button type="submit" className="button-check-in">Регистрация</button>
+        <button type="submit" className="button-inlet">
+          Вход
+        </button>
+        <button className="button-check-in">Регистрация</button>
       </div>
     </form>
   );

@@ -1,5 +1,4 @@
 interface DeleteFromFavoriteRequestParameters {
-    /**favorites record id */
     id: number;
 }
 
