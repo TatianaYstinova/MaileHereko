@@ -34,22 +34,19 @@ export function AddSimilarMoviesModal({
     name: string | undefined;
   } | null>(null);
 
-  const handleChange = (_: any, value: string) => {
-    getAllMoviesFilter({ name: value }).then((res) =>
-      setAllFilmsFromKp(res.data?.docs || null)
-    );
+  const handleChange = async (_: any, value: string) => {
+    const response = await getAllMoviesFilter({ name: value });
+    setAllFilmsFromKp(response.data?.docs || null);
   };
-  const handleAddMovie = () => {
+  const handleAddMovie = async () => {
     if (value) {
-      addToSelectionMovies({
+      await addToSelectionMovies({
         similarMovieId: value.id,
         movieId: movieId,
-      }).then(() => {
-        getMoviesSelection(movieId).then((response) => {
-          updateSelectionMovies(response);
-          handleCloseModalSelectionMovies();
-        });
       });
+      const response = await getMoviesSelection(movieId);
+      updateSelectionMovies(response);
+      handleCloseModalSelectionMovies();
     }
   };
 
@@ -81,7 +78,7 @@ export function AddSimilarMoviesModal({
             options={(allFilmsFromKp ?? [])
               .filter((movie) => !!movie.name)
               .map((movie) => ({ id: movie.id, name: movie.name }))}
-            getOptionLabel={(option) => option.name ?? ""} // Указываем, что отображать в выпадающем списке
+            getOptionLabel={(option) => option.name ?? ""}
             renderInput={(params) => <TextField {...params} label="Movie" />}
           />
         </Typography>

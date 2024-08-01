@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import {useState } from "react";
 
 import "./FilmPage.scss";
 
@@ -22,6 +22,7 @@ import Typography from "@mui/material/Typography";
 import thankYou from "../../assets/thankyou.png";
 import {
   getMoviesSelection,
+  MoviesSelection,
 } from "../../entities/moviesSelection";
 
 import Link from "@mui/material/Link/Link";
@@ -40,7 +41,7 @@ export const FilmPage = () => {
     ["movie", id],
     () => getMovieById(Number(id)),
     {
-      enabled: !!id, // Запрос не выполняется, пока id не задан
+      enabled: !!id,
     }
   );
 
@@ -112,6 +113,10 @@ export const FilmPage = () => {
   const movieId = movie?.data?.id;
   const isMovieIdValid = typeof movieId === 'number';
 
+  const updateSelectionMovies = (newMovies: MoviesSelection[]) => {
+    queryClient.invalidateQueries(["selectionMovies", movie?.data?.id]);
+  };
+
   return (
     <>
       <div className="img-container">
@@ -130,10 +135,10 @@ export const FilmPage = () => {
       <div className="filmCard-container">
         {movie?.data && <FilmCard {...movie?.data} />}
         <div className="button-container">
-          <Button 
+          <Button  
             className="film-button"
             variant="contained"
-            onClick={{toggleFavorite}}
+            onClick={toggleFavorite}
           >
              {isInFavorites ? "Удалить из избранного" : "Добавить в избранное"}
           </Button>
@@ -181,7 +186,7 @@ export const FilmPage = () => {
             handleCloseModalSelectionMovies={handleCloseModalSelectionMovies}
             isOpenModalSelectionMovies={isOpenModalSelectionMovies}
             movieId={movieId}
-            updateSelectionMovies={selectionMovies  || []}
+            updateSelectionMovies={updateSelectionMovies}
           />
         )}
       </div>
