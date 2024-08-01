@@ -4,7 +4,7 @@ const theme = createTheme({
   typography: {
     fontFamily: "Poppins, sans-serif",
   },
-  
+
   components: {
     MuiTypography: {
       styleOverrides: {
@@ -34,10 +34,27 @@ const theme = createTheme({
       defaultProps: {
         color: '#ffffff',
       }
+    },
+    MuiButtonBase: {
+      styleOverrides: {
+        root: {
+          border: "2px solid #7B6EF6",
+          fontFamily: "Poppins, sans-serif",
+          borderRadius: '12px', 
+          color: 'white',
+          fontWeight: 400,
+          fontSize: '16px',
+          lineHight: '24px',
+          backgroundColor: '#7B6EF6',
+          padding: '16px 32px',
+          '&:hover': {
+            border: '2px solid #5A4AF4',
+          },
+        },
+      },
+    },
+
   },
- 
-  },
- 
 });
 
 export default theme;

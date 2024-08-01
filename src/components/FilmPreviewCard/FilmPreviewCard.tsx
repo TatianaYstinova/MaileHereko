@@ -21,12 +21,15 @@ export const FilmPreviewCard = (props: FilmPreviewCardProps) => {
     useEffect(() => {
         const img = new Image();
         img.src = imageUrl;
-        img.onload = () => setIsLoading(false);
+        img.onload = () => {
+            setIsLoading(false);
+        }
+
         img.onerror = () => setIsLoading(false);
     }, [imageUrl]);
 
     return (
-        ( isLoading ? <CircularProgress /> : <Card sx={{ maxWidth: 284, maxHeight: 480, p: 2, borderRadius: '12px', position: 'relative' }}>
+        (isLoading ? <CircularProgress /> : <Card sx={{ maxWidth: 284, maxHeight: 480, p: 2, borderRadius: '12px', position: 'relative' }}>
             <Box sx={{ position: 'absolute', display: 'flex', alignItems: 'center', paddingX: 1, paddingY: 1.5, gap: '4px', backgroundColor: '#000000A6', borderRadius: '8px', mt: 1.3, ml: 1 }} >
                 <Typography component="span" sx={{ color: '#FFBD6D' }}>8.3</Typography>
                 <Rating max={1} name="simple-controlled" value={1} icon={<RatingStar />} />
@@ -39,11 +42,11 @@ export const FilmPreviewCard = (props: FilmPreviewCardProps) => {
                 sx={{ borderRadius: '8px' }}
                 style={{ display: isLoading ? 'block' : 'block' }}
             />
-            <CardContent sx={{ paddingBottom: 0, paddingTop: 3 }}>
+            <CardContent sx={{ paddingTop: 2 }} style={{ paddingBottom: 8 }}>
                 <Typography sx={{ color: theme.palette.grey[50], fontSize: '16px', lineHeight: '24px', fontWeight: '600', textAlign: 'left' }} component="p">
                     {props.name}
                 </Typography>
             </CardContent>
-        </Card>  )
+        </Card>)
     )
 }
