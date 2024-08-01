@@ -16,29 +16,25 @@ export const HomePage = () => {
     const [filter, setFilters] = useState<Filter<IQueryFields>>({ page: 1, limit: 8 })
 
     useEffect(() => {
-        getMoviesByFilterHandler(filter)
+        getMoviesByFilterHandler()
     }, [])
 
-    const getMoviesByFilterHandler = async (filters: Filter<IQueryFields>) => {
-        const response = await getMoviesByFilter(filters)
+    const getMoviesByFilterHandler = async () => {
+        const response = await getMoviesByFilter(filter)
         if (response.data) {
             const newMoviesData = {
                 totalCount: response.data.total,
                 pages: response.data.pages
             }
+            const filterValue: Filter<IQueryFields> = {
+                ...filter,
+                limit: filter.limit,
+                page: Number(filter.page)! + 1
+            }
+            setFilters(filterValue)
             setMoviesData(newMoviesData)
             setMovies([...movies, ...response.data.docs])
         }
-    }
-
-    const loadMore = async () => {
-        const filterValue: Filter<IQueryFields> = {
-            ...filter,
-            limit: filter.limit,
-            page: Number(filter.page)! + 1
-        }
-        setFilters(filterValue)
-        await getMoviesByFilterHandler(filter)
     }
 
     return (
@@ -68,7 +64,7 @@ export const HomePage = () => {
             </Grid>
             <ButtonBase
                 sx={{ mt: 4 }}
-                onClick={loadMore}
+                onClick={getMoviesByFilterHandler}
             >
                 get more
             </ButtonBase>
