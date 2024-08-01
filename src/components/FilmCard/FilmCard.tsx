@@ -2,7 +2,7 @@
 import { MovieDtoV13 } from '@openmoviedb/kinopoiskdev_client';
 import React from 'react';
 import star from '../../assets/star.png';
-import Button from '@mui/material/Button';
+
 
 
 

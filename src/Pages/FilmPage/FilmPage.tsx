@@ -2,10 +2,6 @@ import { useEffect, useState } from "react";
 
 import "./FilmPage.scss";
 
-import {
-  MovieDocsResponseDtoV13,
-  MovieDtoV13,
-} from "@openmoviedb/kinopoiskdev_client";
 
 import Button from "@mui/material/Button";
 
@@ -14,10 +10,11 @@ import { FilmCard } from "../../components/FilmCard";
 import { getAllMoviesFilter, getMovieById } from "../../entities/movie";
 import {
   getFavorites,
-  FavoriteMovie,
   addToFavorites,
   deleteFromFavorites as deleteFromFavoritesApi,
+
 } from "../../entities/favorites";
+import { useQuery, useMutation, useQueryClient } from "react-query";
 
 import Modal from "@mui/material/Modal/Modal";
 import Box from "@mui/material/Box";
@@ -25,7 +22,6 @@ import Typography from "@mui/material/Typography";
 import thankYou from "../../assets/thankyou.png";
 import {
   getMoviesSelection,
-  MoviesSelection,
 } from "../../entities/moviesSelection";
 
 import Link from "@mui/material/Link/Link";
@@ -35,111 +31,86 @@ import { AddSimilarMoviesModal } from "../../components/AddSimilarMoviesModal/Ad
 import CardElement from "../../components/CardElement/CardElement";
 
 export const FilmPage = () => {
-  const [movie, setMovie] = useState<MovieDtoV13 | null>(null);
-  const [favoriteMovie, setFavoriteMovie] = useState<FavoriteMovie | null>(
-    null
-  );
-  const [isInFavorites, setIsInFavorites] = useState<boolean>(false);
-  const [favorites, setFavorites] = useState<FavoriteMovie[] | null>(null);
   const { id } = useParams();
-  const [isOpenModalFavoriteMovie, setIsOpenModalFavoriteMovie] =
-    useState<boolean>(false);
-  const [selectionMovies, setSelectionMovies] = useState<
-    MoviesSelection[] | null
-  >(null);
-  const [similarFromKp, setSimilarFromKp] = useState<
-    MovieDocsResponseDtoV13["docs"] | null
-  >(null);
-  const [isOpenModalSelectionMovies, setIsOpenModalSelectionMovies] =
-    useState<boolean>(false);
-
-  useEffect(() => {
-    if (id) {
-      const movieId = parseInt(id);
-      getMovieById(movieId).then((response) => setMovie(response.data));
+  const queryClient = useQueryClient();
+  const userId = TOKEN;
+  
+  // Запрос на получение фильма по ID
+  const { data: movie } = useQuery(
+    ["movie", id],
+    () => getMovieById(Number(id)),
+    {
+      enabled: !!id, // Запрос не выполняется, пока id не задан
     }
-  }, [id]);
+  );
 
-  useEffect(() => {
-    getFavorites(TOKEN).then((favorites) => setFavorites(favorites));
-  }, [setFavorites]);
+  // Запрос на получение избранных фильмов
+  const { data: favorites } = useQuery(["favorites", userId], () =>
+    getFavorites(userId)
+  );
 
-  useEffect(() => {
-    if (favorites && movie) {
-      const favorite = favorites.find(
-        ({ favoritedMovieId }) => favoritedMovieId === movie.id
-      );
-
-      if (favorite) {
-        setIsInFavorites(true);
-        setFavoriteMovie(favorite);
-      } else {
-        setIsInFavorites(false);
-        setFavoriteMovie(null);
-      }
+  // Запрос на получение выборки фильмов
+  const { data: selectionMovies } = useQuery(
+    ["selectionMovies", movie?.data?.id],
+    () => getMoviesSelection(Number(movie?.data?.id)),
+    {
+      enabled: !!movie,
     }
-  }, [movie, favorites]);
+  );
+  // Мутация для добавления в избранное
+  const addFavoriteMutation = useMutation(addToFavorites, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(["favorites", userId]);
+    },
+  });
+  
+  // Мутация для удаления из избранного
+  const deleteFavoriteMutation = useMutation(deleteFromFavoritesApi, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(["favorites", userId]);
+    },
+  });
+  const isInFavorites = favorites?.some(({ favoritedMovieId }) => favoritedMovieId === movie?.data?.id);
 
-  useEffect(() => {
-    if (movie) {
-      getMoviesSelection(movie.id).then(setSelectionMovies);
-    }
-  }, [movie]);
-
-  useEffect(() => {
-    if (selectionMovies) {
-      const similarMovieIds = selectionMovies.map(
-        (selectionMovie) => selectionMovie.similarMovieId
-      );
-
-      if (similarMovieIds.length) {
-        getAllMoviesFilter({ id: similarMovieIds }).then((response) =>
-          setSimilarFromKp(response.data?.docs || null)
-        );
-      }
-    }
-  }, [selectionMovies]);
-
-  const addFavorites = async () => {
-    if (movie) {
-      addToFavorites({
-        userId: TOKEN,
-        favoritedMovieId: movie.id,
-      }).then(() =>
-        getFavorites(TOKEN).then((favorites) => setFavorites(favorites))
-      );
-    }
-  };
-
-  const deleteFromFavorites = async () => {
-    if (favoriteMovie) {
-      deleteFromFavoritesApi({
-        id: favoriteMovie.id,
-      }).then(() =>
-        getFavorites(TOKEN).then((favorites) => setFavorites(favorites))
-      );
-    }
-  };
+  const [isOpenModalFavoriteMovie, setIsOpenModalFavoriteMovie] = useState(false);
+  const [isOpenModalSelectionMovies, setIsOpenModalSelectionMovies] = useState(false);
 
   const toggleFavorite = () => {
     if (isInFavorites) {
-      deleteFromFavorites();
+      if(favorites && favorites.length > 0){
+        const favorite = favorites.find(favorite => favorite.favoritedMovieId === movie?.data?.id);
+        if (favorite) {
+          deleteFavoriteMutation.mutate({ id: favorite.id });
+        }
+      }
     } else {
-      addFavorites();
+      const favoritedMovieId = movie?.data?.id;
+      if(favoritedMovieId !== undefined){
+        addFavoriteMutation.mutate({ userId: TOKEN, favoritedMovieId});
+      }
     }
-
     setIsOpenModalFavoriteMovie(true);
   };
-
+ 
   const handleClose = () => {
     setIsOpenModalFavoriteMovie(false);
   };
+
   const handleCloseModalSelectionMovies = () => {
     setIsOpenModalSelectionMovies(false);
   };
+
   const openModalSelectionMovies = () => {
     setIsOpenModalSelectionMovies(true);
   };
+   
+  const similarMovieIds = selectionMovies ? selectionMovies.map(selectionMovie => selectionMovie.similarMovieId) : [];
+
+  const { data: similarFromKp } = useQuery(['similarMovies', similarMovieIds], () => getAllMoviesFilter({ id: similarMovieIds }), {
+    enabled: similarMovieIds.length > 0,
+  });
+  const movieId = movie?.data?.id;
+  const isMovieIdValid = typeof movieId === 'number';
 
   return (
     <>
@@ -147,24 +118,24 @@ export const FilmPage = () => {
         <div className="img-poster">
           <img
             className="poster-header"
-            src={movie?.poster?.url}
+            src={movie?.data?.poster?.url}
             alt="poster"
           />
         </div>
       </div>
       <div className="path-container">
         <div className="path">MaileHereko/Movies</div>
-        <div className="film-title">{movie?.name}</div>
+        <div className="film-title">{movie?.data?.name}</div>
       </div>
       <div className="filmCard-container">
-        {movie && <FilmCard {...movie} />}
+        {movie?.data && <FilmCard {...movie?.data} />}
         <div className="button-container">
-          <Button
+          <Button 
             className="film-button"
             variant="contained"
-            onClick={toggleFavorite}
+            onClick={{toggleFavorite}}
           >
-            {isInFavorites ? "Удалить из избранного" : "Добавить в избранное"}
+             {isInFavorites ? "Удалить из избранного" : "Добавить в избранное"}
           </Button>
           <Modal
             open={isOpenModalFavoriteMovie}
@@ -181,16 +152,16 @@ export const FilmPage = () => {
                 id="modal-modal-description"
               >
                 {isInFavorites
-                  ? `Вы добавили ${movie?.name} в "Избранное"`
-                  : `Вы удалили ${movie?.name} из "Избранное"`}
+                  ? `Вы добавили ${movie?.data?.name} в "Избранное"`
+                  : `Вы удалили ${movie?.data?.name} из "Избранное"`}
               </Typography>
             </Box>
           </Modal>
         </div>
       </div>
       <div className="container-selection-movies">
-        {similarFromKp?.map(({ poster, rating, name, id }) => (
-          <Link href={`/movie/${id}`}>
+        {Array.isArray(similarFromKp?.data) && similarFromKp?.data?.map(({ poster, rating, name, id }) => (
+          <Link href={`/movie/${id}`} key={id}>
             <CardElement
               image={poster?.url || ""}
               starNumber={Number(rating?.kp?.toFixed(1)) || "Нет оценок"}
@@ -205,12 +176,12 @@ export const FilmPage = () => {
         >
           Добавить фильм
         </Button>
-        {movie && (
+        {movie && isMovieIdValid && (
           <AddSimilarMoviesModal
             handleCloseModalSelectionMovies={handleCloseModalSelectionMovies}
             isOpenModalSelectionMovies={isOpenModalSelectionMovies}
-            movieId={movie.id}
-            updateSelectionMovies={setSelectionMovies}
+            movieId={movieId}
+            updateSelectionMovies={selectionMovies  || []}
           />
         )}
       </div>

@@ -2,7 +2,6 @@ import { MoviesSelection } from "../types";
 
 export const getMoviesSelection = async (movieId:number):Promise<MoviesSelection[]>=>{
     const response = await fetch(`http://localhost:777/moviesSelection?movieId=${movieId}`);
-    const data = await response.json();
-
-    return data;
+    if (!response.ok) throw new Error('Network response was not ok');
+    return response.json();
 }
