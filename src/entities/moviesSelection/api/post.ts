@@ -3,7 +3,7 @@ interface AddMoviesSelection{
     similarMovieId:number
     
 }
-export const addToSelectionMovies =(params:AddMoviesSelection)=>fetch('http://localhost:777/moviesSelection',{
+export const addToSimilarMovies =(params:AddMoviesSelection)=>fetch('http://localhost:777/moviesSelection',{
     method :'POST',
     headers: {
         'Content-Type': 'application/json'

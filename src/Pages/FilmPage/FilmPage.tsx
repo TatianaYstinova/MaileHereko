@@ -21,7 +21,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import thankYou from "../../assets/thankyou.png";
 import {
-  getMoviesSelection,
+  getSimilarMovies,
   MoviesSelection,
 } from "../../entities/moviesSelection";
 
@@ -35,13 +35,13 @@ export const FilmPage = () => {
   const { id } = useParams();
   const queryClient = useQueryClient();
   const userId = TOKEN;
-  
+  const [isOpenModalFavoriteMovie, setIsOpenModalFavoriteMovie] = useState(false);
+  const [isOpenModalSelectionMovies, setIsOpenModalSelectionMovies] = useState(false);
+ 
+
   // Запрос на получение фильма по ID
-  const { data: movie } = useQuery(
-    ["movie", id],
-    () => getMovieById(Number(id)),
-    {
-      enabled: !!id,
+  const { data: movie } = useQuery(["movie", id],() => getMovieById(Number(id)),
+  { enabled: !!id,
     }
   );
 
@@ -50,72 +50,64 @@ export const FilmPage = () => {
     getFavorites(userId)
   );
 
-  // Запрос на получение выборки фильмов
-  const { data: selectionMovies } = useQuery(
-    ["selectionMovies", movie?.data?.id],
-    () => getMoviesSelection(Number(movie?.data?.id)),
-    {
-      enabled: !!movie,
-    }
-  );
+  const isInFavorites = favorites?.some(({ favoritedMovieId }) => favoritedMovieId === movie?.data?.id);
+  const favoriteMovie = favorites?.find(({ favoritedMovieId }) => favoritedMovieId === movie?.data?.id) || null;
+
   // Мутация для добавления в избранное
   const addFavoriteMutation = useMutation(addToFavorites, {
     onSuccess: () => {
       queryClient.invalidateQueries(["favorites", userId]);
+      setIsOpenModalFavoriteMovie(true);
     },
   });
-  
+
   // Мутация для удаления из избранного
   const deleteFavoriteMutation = useMutation(deleteFromFavoritesApi, {
     onSuccess: () => {
       queryClient.invalidateQueries(["favorites", userId]);
+      setIsOpenModalFavoriteMovie(true);
     },
   });
-  const isInFavorites = favorites?.some(({ favoritedMovieId }) => favoritedMovieId === movie?.data?.id);
 
-  const [isOpenModalFavoriteMovie, setIsOpenModalFavoriteMovie] = useState(false);
-  const [isOpenModalSelectionMovies, setIsOpenModalSelectionMovies] = useState(false);
-
-  const toggleFavorite = () => {
+  const handleToggleFavorite = () => {
     if (isInFavorites) {
-      if(favorites && favorites.length > 0){
-        const favorite = favorites.find(favorite => favorite.favoritedMovieId === movie?.data?.id);
-        if (favorite) {
-          deleteFavoriteMutation.mutate({ id: favorite.id });
-        }
-      }
+      if (favoriteMovie?.id !== undefined) {
+        deleteFavoriteMutation.mutate({ id: favoriteMovie.id });
+      } 
     } else {
       const favoritedMovieId = movie?.data?.id;
-      if(favoritedMovieId !== undefined){
-        addFavoriteMutation.mutate({ userId: TOKEN, favoritedMovieId});
-      }
+  
+      if (favoritedMovieId !== undefined) {
+        addFavoriteMutation.mutate({
+          userId: TOKEN,
+          favoritedMovieId: favoritedMovieId,
+        });
+      } 
     }
-    setIsOpenModalFavoriteMovie(true);
   };
- 
-  const handleClose = () => {
-    setIsOpenModalFavoriteMovie(false);
-  };
+  
 
-  const handleCloseModalSelectionMovies = () => {
-    setIsOpenModalSelectionMovies(false);
-  };
-
-  const openModalSelectionMovies = () => {
-    setIsOpenModalSelectionMovies(true);
-  };
-   
-  const similarMovieIds = selectionMovies ? selectionMovies.map(selectionMovie => selectionMovie.similarMovieId) : [];
-
-  const { data: similarFromKp } = useQuery(['similarMovies', similarMovieIds], () => getAllMoviesFilter({ id: similarMovieIds }), {
-    enabled: similarMovieIds.length > 0,
+  // Запрос на получение  похожих фильмов 
+  const { data: similarMoviesData } = useQuery('similarMoviesFromMyServer', () => getSimilarMovies(Number(movie?.data?.id)), {
+    enabled: !!movie
   });
+
+  const { data: similarFromKp } = useQuery('similarMovies',  async () => {
+    const similarMovieIds = similarMoviesData?.map(similarMovies => similarMovies.similarMovieId);
+    return similarMovieIds && similarMovieIds.length ? await getAllMoviesFilter({ id: similarMovieIds }) : null;
+  }, {
+    enabled: !!similarMoviesData
+  });
+
+ 
+ 
   const movieId = movie?.data?.id;
   const isMovieIdValid = typeof movieId === 'number';
 
   const updateSelectionMovies = (newMovies: MoviesSelection[]) => {
-    queryClient.invalidateQueries(["selectionMovies", movie?.data?.id]);
+    queryClient.invalidateQueries(["similarMovies", movie?.data?.id]);
   };
+  console.log({re:similarFromKp?.data})
 
   return (
     <>
@@ -138,13 +130,13 @@ export const FilmPage = () => {
           <Button  
             className="film-button"
             variant="contained"
-            onClick={toggleFavorite}
+            onClick={handleToggleFavorite}
           >
              {isInFavorites ? "Удалить из избранного" : "Добавить в избранное"}
           </Button>
           <Modal
             open={isOpenModalFavoriteMovie}
-            onClose={handleClose}
+            onClose={() => setIsOpenModalFavoriteMovie(false)}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
@@ -165,7 +157,7 @@ export const FilmPage = () => {
         </div>
       </div>
       <div className="container-selection-movies">
-        {Array.isArray(similarFromKp?.data) && similarFromKp?.data?.map(({ poster, rating, name, id }) => (
+        {Array.isArray(similarFromKp?.data?.docs) && similarFromKp?.data?.docs.map(({ poster, rating, name, id }) => (
           <Link href={`/movie/${id}`} key={id}>
             <CardElement
               image={poster?.url || ""}
@@ -177,13 +169,13 @@ export const FilmPage = () => {
         <Button
           className="add-film-to-selections "
           variant="contained"
-          onClick={openModalSelectionMovies}
+          onClick={() => setIsOpenModalSelectionMovies(true)}
         >
           Добавить фильм
         </Button>
         {movie && isMovieIdValid && (
           <AddSimilarMoviesModal
-            handleCloseModalSelectionMovies={handleCloseModalSelectionMovies}
+            handleCloseModalSelectionMovies={() => setIsOpenModalSelectionMovies(false)}
             isOpenModalSelectionMovies={isOpenModalSelectionMovies}
             movieId={movieId}
             updateSelectionMovies={updateSelectionMovies}
