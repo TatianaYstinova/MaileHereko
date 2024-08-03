@@ -1,2 +1,2 @@
-export {getMoviesSelection} from './get' 
-export {addToSelectionMovies} from './post'
+export {getSimilarMovies} from './get' 
+export {addToSimilarMovies} from './post'

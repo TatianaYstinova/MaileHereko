@@ -3,15 +3,19 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { MovieDocsResponseDtoV13 } from "@openmoviedb/kinopoiskdev_client";
-import { useState } from "react";
+import {
+  MovieDocsResponseDtoV13,
+  MovieDtoV13,
+} from "@openmoviedb/kinopoiskdev_client";
+import { useEffect, useState } from "react";
 import { getAllMoviesFilter } from "../../entities/movie";
 import Button from "@mui/material/Button";
-import { addToSelectionMovies } from "../../entities/moviesSelection/api";
+import { addToSimilarMovies } from "../../entities/moviesSelection/api";
 import {
   MoviesSelection,
-  getMoviesSelection,
+  getSimilarMovies,
 } from "../../entities/moviesSelection";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 
 interface AddSimilarMoviesModalProps {
   isOpenModalSelectionMovies: boolean;
@@ -26,29 +30,48 @@ export function AddSimilarMoviesModal({
   movieId,
   updateSelectionMovies,
 }: AddSimilarMoviesModalProps) {
-  const [allFilmsFromKp, setAllFilmsFromKp] = useState<
-    MovieDocsResponseDtoV13["docs"] | null
-  >(null);
   const [value, setValue] = useState<{
     id: number;
     name: string | undefined;
   } | null>(null);
+  
+  const [searchWord,setSearchWord] = useState('');
+ 
 
-  const handleChange = async (_: any, value: string) => {
-    const response = await getAllMoviesFilter({ name: value });
-    setAllFilmsFromKp(response.data?.docs || null);
-  };
-  const handleAddMovie = async () => {
-    if (value) {
-      await addToSelectionMovies({
+
+  // Запрашиваем все фильмы
+  const { data: allFilmsFromKp } = useQuery<MovieDocsResponseDtoV13["docs"]>(
+    ["allMovies"],
+    async () => {
+      const response = await getAllMoviesFilter({ name: value?.name || "" });
+      return response.data?.docs || [];
+    }
+  );
+
+  const addMovieMutation = useMutation(addToSimilarMovies, {
+    onSuccess: async () => {
+      const response = await getSimilarMovies(movieId);
+      updateSelectionMovies(response);
+      handleCloseModalSelectionMovies();
+    },
+  });
+  const handleAddMovie = () => {
+    if (value && value.id && movieId) {
+      addMovieMutation.mutate({
         similarMovieId: value.id,
         movieId: movieId,
       });
-      const response = await getMoviesSelection(movieId);
-      updateSelectionMovies(response);
-      handleCloseModalSelectionMovies();
     }
   };
+  const { data,  } = useQuery(["similarMovies", searchWord],() =>getAllMoviesFilter({name: searchWord}));
+  
+  
+
+  
+  const handleChange = async (_: any, value: string) => {
+    setSearchWord(value)
+    
+    };
 
   return (
     <Modal
@@ -65,17 +88,10 @@ export function AddSimilarMoviesModal({
         >
           <Autocomplete
             value={value}
-            onChange={(
-              event: any,
-              newValue: { id: number; name: string | undefined } | null
-            ) => {
-              setValue(newValue);
-            }}
+            onChange={(_, newValue) => setValue(newValue)}
             disablePortal
-            id="combo-box-demo"
-            className="text-input"
             onInputChange={handleChange}
-            options={(allFilmsFromKp ?? [])
+            options={(data?.data?.docs ?? [])
               .filter((movie) => !!movie.name)
               .map((movie) => ({ id: movie.id, name: movie.name }))}
             getOptionLabel={(option) => option.name ?? ""}
