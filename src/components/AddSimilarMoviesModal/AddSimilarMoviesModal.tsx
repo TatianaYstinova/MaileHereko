@@ -3,11 +3,8 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import {
-  MovieDocsResponseDtoV13,
-  MovieDtoV13,
-} from "@openmoviedb/kinopoiskdev_client";
-import { useEffect, useState } from "react";
+import { MovieDocsResponseDtoV13 } from "@openmoviedb/kinopoiskdev_client";
+import { useState } from "react";
 import { getAllMoviesFilter } from "../../entities/movie";
 import Button from "@mui/material/Button";
 import { addToSimilarMovies } from "../../entities/moviesSelection/api";
@@ -15,43 +12,41 @@ import {
   MoviesSelection,
   getSimilarMovies,
 } from "../../entities/moviesSelection";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import {
+  QueryObserverResult,
+  RefetchOptions,
+  RefetchQueryFilters,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "react-query";
 
 interface AddSimilarMoviesModalProps {
   isOpenModalSelectionMovies: boolean;
   handleCloseModalSelectionMovies: () => void;
   movieId: number;
-  updateSelectionMovies: (newMovie: MoviesSelection[]) => void;
+  refetch: <TPageData>(
+    options?: (RefetchOptions & RefetchQueryFilters<TPageData>) | undefined
+  ) => Promise<QueryObserverResult<MoviesSelection[], unknown>>;
 }
 
 export function AddSimilarMoviesModal({
   isOpenModalSelectionMovies,
   handleCloseModalSelectionMovies,
   movieId,
-  updateSelectionMovies,
+  refetch,
 }: AddSimilarMoviesModalProps) {
   const [value, setValue] = useState<{
     id: number;
     name: string | undefined;
   } | null>(null);
+
+  const [searchWord, setSearchWord] = useState("");
   
-  const [searchWord,setSearchWord] = useState('');
- 
-
-
-  // Запрашиваем все фильмы
-  const { data: allFilmsFromKp } = useQuery<MovieDocsResponseDtoV13["docs"]>(
-    ["allMovies"],
-    async () => {
-      const response = await getAllMoviesFilter({ name: value?.name || "" });
-      return response.data?.docs || [];
-    }
-  );
 
   const addMovieMutation = useMutation(addToSimilarMovies, {
-    onSuccess: async () => {
-      const response = await getSimilarMovies(movieId);
-      updateSelectionMovies(response);
+    onSuccess:  () => {
+      refetch();
       handleCloseModalSelectionMovies();
     },
   });
@@ -63,15 +58,13 @@ export function AddSimilarMoviesModal({
       });
     }
   };
-  const { data,  } = useQuery(["similarMovies", searchWord],() =>getAllMoviesFilter({name: searchWord}));
-  
-  
+  const { data } = useQuery(["filmsBySearchWord", searchWord], () =>
+    getAllMoviesFilter({ name: searchWord })
+  );
 
-  
   const handleChange = async (_: any, value: string) => {
-    setSearchWord(value)
-    
-    };
+    setSearchWord(value);
+  };
 
   return (
     <Modal
