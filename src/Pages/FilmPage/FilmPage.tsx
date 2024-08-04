@@ -28,6 +28,7 @@ import { useParams } from "react-router";
 
 import { AddSimilarMoviesModal } from "../../components/AddSimilarMoviesModal/AddSimilarMoviesModal";
 import CardElement from "../../components/CardElement/CardElement";
+import Skeleton from "@mui/material/Skeleton";
 
 export const FilmPage = () => {
   const { id } = useParams();
@@ -37,23 +38,25 @@ export const FilmPage = () => {
     useState(false);
   const [isOpenModalSelectionMovies, setIsOpenModalSelectionMovies] =
     useState(false);
- 
 
   // Запрос на получение фильма по ID
-  const { data: movie } = useQuery(
-    ["movie", id],
-    () => getMovieById(Number(id)),
-    { enabled: !!id }
-  );
+  const {
+    data: movie,
+    isLoading: isLoadingMovie
+  } = useQuery(["movie", id], () => getMovieById(Number(id)), {
+    enabled: !!id,
+  });
 
   // Запрос на получение избранных фильмов
-  const { data: favorites } = useQuery(["favorites", userId], () =>
-    getFavorites(userId)
+  const { data: favorites, isLoading: isLoadingFavorites } = useQuery(
+    ["favorites", userId],
+    () => getFavorites(userId)
   );
-
+  
   const isInFavorites = favorites?.some(
     ({ favoritedMovieId }) => favoritedMovieId === movie?.data?.id
-  );
+  ) || false;
+
   const favoriteMovie =
     favorites?.find(
       ({ favoritedMovieId }) => favoritedMovieId === movie?.data?.id
@@ -100,7 +103,6 @@ export const FilmPage = () => {
       enabled: !!movie,
     }
   );
- 
 
   const { data: similarFromKp } = useQuery(
     ["similarMovies", similarMoviesData],
@@ -120,13 +122,17 @@ export const FilmPage = () => {
   const movieId = movie?.data?.id;
   const isMovieIdValid = typeof movieId === "number";
 
+  if (isLoadingMovie) {
+    return <div className="download">Загрузка...</div>; // Индикатор загрузки
+  }
+
   return (
     <>
       <div className="img-container">
         <div className="img-poster">
           <img
             className="poster-header"
-            src={movie?.data?.poster?.url}
+            src={movie?.data?.poster?.url || 'Нет постера'}
             alt="poster"
           />
         </div>
@@ -138,6 +144,10 @@ export const FilmPage = () => {
       <div className="filmCard-container">
         {movie?.data && <FilmCard {...movie?.data} />}
         <div className="button-container">
+        {addFavoriteMutation.isLoading || deleteFavoriteMutation.isLoading || isLoadingFavorites ?
+        (
+          <Skeleton variant="rectangular" width={210} height={50} />
+        ) :(
           <Button
             className="film-button"
             variant="contained"
@@ -145,6 +155,7 @@ export const FilmPage = () => {
           >
             {isInFavorites ? "Удалить из избранного" : "Добавить в избранное"}
           </Button>
+        )}
           <Modal
             open={isOpenModalFavoriteMovie}
             onClose={() => setIsOpenModalFavoriteMovie(false)}
