@@ -1,7 +1,6 @@
-import {useState } from "react";
+import { useState } from "react";
 
 import "./FilmPage.scss";
-
 
 import Button from "@mui/material/Button";
 
@@ -12,7 +11,6 @@ import {
   getFavorites,
   addToFavorites,
   deleteFromFavorites as deleteFromFavoritesApi,
-
 } from "../../entities/favorites";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 
@@ -30,28 +28,39 @@ import { useParams } from "react-router";
 
 import { AddSimilarMoviesModal } from "../../components/AddSimilarMoviesModal/AddSimilarMoviesModal";
 import CardElement from "../../components/CardElement/CardElement";
+import Skeleton from "@mui/material/Skeleton";
 
 export const FilmPage = () => {
   const { id } = useParams();
   const queryClient = useQueryClient();
   const userId = TOKEN;
-  const [isOpenModalFavoriteMovie, setIsOpenModalFavoriteMovie] = useState(false);
-  const [isOpenModalSelectionMovies, setIsOpenModalSelectionMovies] = useState(false);
- 
+  const [isOpenModalFavoriteMovie, setIsOpenModalFavoriteMovie] =
+    useState(false);
+  const [isOpenModalSelectionMovies, setIsOpenModalSelectionMovies] =
+    useState(false);
 
   // Запрос на получение фильма по ID
-  const { data: movie } = useQuery(["movie", id],() => getMovieById(Number(id)),
-  { enabled: !!id,
-    }
-  );
+  const {
+    data: movie,
+    isLoading: isLoadingMovie
+  } = useQuery(["movie", id], () => getMovieById(Number(id)), {
+    enabled: !!id,
+  });
 
   // Запрос на получение избранных фильмов
-  const { data: favorites } = useQuery(["favorites", userId], () =>
-    getFavorites(userId)
+  const { data: favorites, isLoading: isLoadingFavorites } = useQuery(
+    ["favorites", userId],
+    () => getFavorites(userId)
   );
+  
+  const isInFavorites = favorites?.some(
+    ({ favoritedMovieId }) => favoritedMovieId === movie?.data?.id
+  ) || false;
 
-  const isInFavorites = favorites?.some(({ favoritedMovieId }) => favoritedMovieId === movie?.data?.id);
-  const favoriteMovie = favorites?.find(({ favoritedMovieId }) => favoritedMovieId === movie?.data?.id) || null;
+  const favoriteMovie =
+    favorites?.find(
+      ({ favoritedMovieId }) => favoritedMovieId === movie?.data?.id
+    ) || null;
 
   // Мутация для добавления в избранное
   const addFavoriteMutation = useMutation(addToFavorites, {
@@ -73,41 +82,49 @@ export const FilmPage = () => {
     if (isInFavorites) {
       if (favoriteMovie?.id !== undefined) {
         deleteFavoriteMutation.mutate({ id: favoriteMovie.id });
-      } 
+      }
     } else {
       const favoritedMovieId = movie?.data?.id;
-  
+
       if (favoritedMovieId !== undefined) {
         addFavoriteMutation.mutate({
           userId: TOKEN,
           favoritedMovieId: favoritedMovieId,
         });
-      } 
+      }
     }
   };
-  
 
-  // Запрос на получение  похожих фильмов 
-  const { data: similarMoviesData } = useQuery('similarMoviesFromMyServer', () => getSimilarMovies(Number(movie?.data?.id)), {
-    enabled: !!movie
-  });
+  // Запрос на получение  похожих фильмов
+  const { data: similarMoviesData, refetch } = useQuery(
+    "similarMoviesFromMyServer",
+    () => getSimilarMovies(Number(movie?.data?.id)),
+    {
+      enabled: !!movie,
+    }
+  );
 
-  const { data: similarFromKp } = useQuery('similarMovies',  async () => {
-    const similarMovieIds = similarMoviesData?.map(similarMovies => similarMovies.similarMovieId);
-    return similarMovieIds && similarMovieIds.length ? await getAllMoviesFilter({ id: similarMovieIds }) : null;
-  }, {
-    enabled: !!similarMoviesData
-  });
+  const { data: similarFromKp } = useQuery(
+    ["similarMovies", similarMoviesData],
+    async () => {
+      const similarMovieIds = similarMoviesData?.map(
+        (similarMovies) => similarMovies.similarMovieId
+      );
+      return similarMovieIds && similarMovieIds.length
+        ? await getAllMoviesFilter({ id: similarMovieIds })
+        : null;
+    },
+    {
+      enabled: !!similarMoviesData,
+    }
+  );
 
- 
- 
   const movieId = movie?.data?.id;
-  const isMovieIdValid = typeof movieId === 'number';
+  const isMovieIdValid = typeof movieId === "number";
 
-  const updateSelectionMovies = (newMovies: MoviesSelection[]) => {
-    queryClient.invalidateQueries(["similarMovies", movie?.data?.id]);
-  };
-  console.log({re:similarFromKp?.data})
+  if (isLoadingMovie) {
+    return <div className="download">Загрузка...</div>; // Индикатор загрузки
+  }
 
   return (
     <>
@@ -115,7 +132,7 @@ export const FilmPage = () => {
         <div className="img-poster">
           <img
             className="poster-header"
-            src={movie?.data?.poster?.url}
+            src={movie?.data?.poster?.url || 'Нет постера'}
             alt="poster"
           />
         </div>
@@ -127,13 +144,18 @@ export const FilmPage = () => {
       <div className="filmCard-container">
         {movie?.data && <FilmCard {...movie?.data} />}
         <div className="button-container">
-          <Button  
+        {addFavoriteMutation.isLoading || deleteFavoriteMutation.isLoading || isLoadingFavorites ?
+        (
+          <Skeleton variant="rectangular" width={210} height={50} />
+        ) :(
+          <Button
             className="film-button"
             variant="contained"
             onClick={handleToggleFavorite}
           >
-             {isInFavorites ? "Удалить из избранного" : "Добавить в избранное"}
+            {isInFavorites ? "Удалить из избранного" : "Добавить в избранное"}
           </Button>
+        )}
           <Modal
             open={isOpenModalFavoriteMovie}
             onClose={() => setIsOpenModalFavoriteMovie(false)}
@@ -157,15 +179,16 @@ export const FilmPage = () => {
         </div>
       </div>
       <div className="container-selection-movies">
-        {Array.isArray(similarFromKp?.data?.docs) && similarFromKp?.data?.docs.map(({ poster, rating, name, id }) => (
-          <Link href={`/movie/${id}`} key={id}>
-            <CardElement
-              image={poster?.url || ""}
-              starNumber={Number(rating?.kp?.toFixed(1)) || "Нет оценок"}
-              text={name || ""}
-            />
-          </Link>
-        ))}
+        {Array.isArray(similarFromKp?.data?.docs) &&
+          similarFromKp?.data?.docs.map(({ poster, rating, name, id }) => (
+            <Link href={`/movie/${id}`} key={id}>
+              <CardElement
+                image={poster?.url || ""}
+                starNumber={Number(rating?.kp?.toFixed(1)) || "Нет оценок"}
+                text={name || ""}
+              />
+            </Link>
+          ))}
         <Button
           className="add-film-to-selections "
           variant="contained"
@@ -175,10 +198,12 @@ export const FilmPage = () => {
         </Button>
         {movie && isMovieIdValid && (
           <AddSimilarMoviesModal
-            handleCloseModalSelectionMovies={() => setIsOpenModalSelectionMovies(false)}
+            refetch={refetch}
+            handleCloseModalSelectionMovies={() =>
+              setIsOpenModalSelectionMovies(false)
+            }
             isOpenModalSelectionMovies={isOpenModalSelectionMovies}
             movieId={movieId}
-            updateSelectionMovies={updateSelectionMovies}
           />
         )}
       </div>
