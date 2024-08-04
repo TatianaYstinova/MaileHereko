@@ -6,7 +6,6 @@ import star from '../../assets/star.png';
 
 
 
-
 export const FilmCard: React.FC<MovieDtoV13> = ({
   rating,
   slogan,
