@@ -53,7 +53,16 @@ const theme = createTheme({
         },
       },
     },
-
+    MuiTextField :{
+      styleOverrides:{
+        root:{
+          width:"100%",
+          display:"flex",
+          border:"1px solid #ffffff",
+          top:"38px"
+        }
+      }
+    },
   },
 });
 
