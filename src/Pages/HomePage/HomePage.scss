@@ -1,4 +1,10 @@
 
-.search-box-button{
-    top:37px
+
+.search-box-container{
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 27px;
+    
 }

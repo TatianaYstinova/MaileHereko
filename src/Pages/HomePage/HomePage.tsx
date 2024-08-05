@@ -5,10 +5,23 @@ import {
   IQueryFields,
   MovieDtoV13,
   MovieFields,
+  SPECIAL_VALUE,
 } from "@openmoviedb/kinopoiskdev_client";
 import { getMoviesByFilter } from "../../entities/movie/api/get-by-filters";
 import { FilmPreviewCard } from "../../components/FilmPreviewCard/FilmPreviewCard";
-import { Button, ButtonBase, Grid, TextField, Typography } from "@mui/material";
+import {
+  Button,
+  ButtonBase,
+  Checkbox,
+  FormControlLabel,
+  Grid,
+  InputAdornment,
+  Popover,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { AccountCircle } from "@mui/icons-material";
+import SearchIcon from "@mui/icons-material/Search";
 
 export type moviesData = {
   totalCount: number;
@@ -24,7 +37,10 @@ export const HomePage = () => {
     page: 1,
     limit: 8,
   });
-  const [searchWord, setSearchWord] = useState<string>("");
+  const [searchWord, setSearchWord] = useState<string>();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [isTop100Checked, setIsTop100Checked] = useState(false);
+  const [isTop250Checked, setIsTop250Checked] = useState(false);
 
   useEffect(() => {
     getMoviesByFilterHandler();
@@ -50,12 +66,18 @@ export const HomePage = () => {
   const handleSearch = async () => {
     const searchFilter: Filter<MovieFields> = {
       ...filter,
-      name: searchWord,
+      name: searchWord || undefined,
       page: 1,
     };
-    setFilters(searchFilter);
+    if (isTop100Checked) {
+      searchFilter.top10 = SPECIAL_VALUE.NOT_NULL;
+    }
+    if (isTop250Checked) {
+      searchFilter.top250 = SPECIAL_VALUE.NOT_NULL;
+    }
+    setFilters(JSON.parse(JSON.stringify(searchFilter)));
 
-    const response = await getMoviesByFilter(searchFilter);
+    const response = await getMoviesByFilter(JSON.parse(JSON.stringify(searchFilter)));
     if (response.data) {
       const newMoviesData = {
         totalCount: response.data.total,
@@ -66,22 +88,81 @@ export const HomePage = () => {
     }
   };
 
+  // Функции для управления Popover
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? "simple-popover" : undefined;
+
   return (
     <div>
-        <div>
-      <Grid item xs={12} sx={{display:"flex"}}>
-        <TextField
-          label="Поиск фильмов"
-          variant="outlined"
-          value={searchWord}
-          onChange={(e) => setSearchWord(e.target.value)}
-        />
-        <Button variant="contained" className="search-box-button" onClick={handleSearch}>
-          Поиск
+      <div className="search-box-container">
+        <Button variant="outlined" onClick={handleClick}>
+          Расширенный поиск
         </Button>
-      </Grid>
-
-        </div>
+        <Popover
+          id={id}
+          open={open}
+          anchorEl={anchorEl}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "left",
+          }}
+        >
+          <div style={{ padding: "16px" }}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={isTop100Checked}
+                  onChange={(e) => setIsTop100Checked(e.target.checked)}
+                />
+              }
+              label="Тор 100"
+            />
+             <FormControlLabel
+              control={
+                <Checkbox
+                  checked={isTop250Checked}
+                  onChange={(e) => setIsTop250Checked(e.target.checked)}
+                />
+              }
+              label="Тор 250"
+            />
+          </div>
+        </Popover>
+        <Grid sx={{position:'relative',width:'100%',display:'flex'}} >
+          <TextField 
+            variant="outlined"
+            value={searchWord}
+            onChange={(e) => setSearchWord(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+          <Button 
+            variant="contained"
+            className="search-box-button"
+            onClick={handleSearch}
+          >
+            Поиск
+          </Button>
+        </Grid>
+      </div>
 
       <Grid
         container
@@ -137,3 +218,4 @@ export const HomePage = () => {
     </div>
   );
 };
+ 

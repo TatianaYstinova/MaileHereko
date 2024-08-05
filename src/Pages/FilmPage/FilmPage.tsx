@@ -19,8 +19,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import thankYou from "../../assets/thankyou.png";
 import {
-  getSimilarMovies,
-  MoviesSelection,
+  getSimilarMovies
 } from "../../entities/moviesSelection";
 
 import Link from "@mui/material/Link/Link";
