@@ -63,6 +63,24 @@ const theme = createTheme({
         }
       }
     },
+    MuiFormControlLabel :{
+      styleOverrides:{
+        root:{
+          padding:"16px"
+        }
+      }
+    },
+    MuiGrid:{
+      styleOverrides:{
+        root:{
+          justifyContent: "center",
+          maxWidth: "1200px",
+          margin: "auto",
+          position: "relative",
+          alignItems: "center",
+        }
+      }
+    }
   },
 });
 

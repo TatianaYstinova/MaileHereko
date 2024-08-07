@@ -104,7 +104,7 @@ export const HomePage = () => {
     <div>
       <div className="search-box-container">
         <Button variant="outlined" onClick={handleClick}>
-          Расширенный поиск
+          Фильтры
         </Button>
         <Popover
           id={id}
@@ -120,7 +120,7 @@ export const HomePage = () => {
             horizontal: "left",
           }}
         >
-          <div style={{ padding: "16px" }}>
+          <div >
             <FormControlLabel
               control={
                 <Checkbox
@@ -141,7 +141,7 @@ export const HomePage = () => {
             />
           </div>
         </Popover>
-        <Grid sx={{position:'relative',width:'100%',display:'flex'}} >
+        <Grid className="search-word"  >
           <TextField 
             variant="outlined"
             value={searchWord}
@@ -164,34 +164,25 @@ export const HomePage = () => {
         </Grid>
       </div>
 
-      <Grid
+      <Grid 
         container
         spacing={3}
         columns={{ xs: 4, md: 12 }}
-        sx={{
-          justifyContent: "center",
-          maxWidth: "1200px",
-          margin: "auto",
-          position: "relative",
-          alignItems: "center",
-        }}
       >
-        <Grid
+        <Grid className="text- button- container"
           item
           xs={12}
           md={12}
-          style={{ textAlign: "left", color: "#767E94", lineHeight: "24px" }}
         >
-          <Typography
+          <Typography className="text"
             component="span"
-            sx={{ fontSize: "32px", fontWeight: "600" }}
           >
             {" "}
             Все{" "}
           </Typography>
           <Typography
             component="span"
-            sx={{ fontSize: "16px", fontWeight: "400" }}
+           
           >
             {" "}
             {`(${moviesData?.totalCount})`}
