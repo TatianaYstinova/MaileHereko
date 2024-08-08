@@ -1,5 +1,5 @@
 import "./HomePage.scss";
-import { useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import {
   Filter,
   MovieDtoV13,
@@ -16,6 +16,7 @@ import {
   Grid,
   InputAdornment,
   Popover,
+  Slider,
   TextField,
   Typography,
 } from "@mui/material";
@@ -42,15 +43,13 @@ export const HomePage = () => {
   const [isTop10Checked, setIsTop10Checked] = useState(false);
   const [isTop250Checked, setIsTop250Checked] = useState(false);
   const [isSeriesChecked, setIsSeriesChecked] = useState(false);
- 
-
-  const [isRatingKpChecked, setIsRatingKpChecked] = useState(false); 
-  const [isRatingImdbChecked, setIsRatingImdbChecked] = useState(false);
-
   const [selectedGenres, setSelectedGenres] = useState<Genre[]>([]);
 
-
  
+  const [ratingKp, setRatingKp] = useState<number[]>([1, 10]);
+  const [ratingIMDb, setRatingIMDb] = useState<number[]>([1, 10]);
+
+
   useEffect(() => {
     getMoviesByFilterHandler();
   }, []);
@@ -73,17 +72,14 @@ export const HomePage = () => {
     }
   };
   const handleSearch = async () => {
-
-    
-
     const searchFilter: Filter<MovieFields> = {
       ...filter,
       name: searchWord || undefined,
       page: 1,
-      isSeries:isSeriesChecked,
-    ["genres.name"] : selectedGenres,
-      ["rating.kp"]: isRatingKpChecked ? "1-10" : undefined, 
-      ["rating.imdb"]: isRatingImdbChecked ? "1-10" : undefined, 
+      isSeries: isSeriesChecked,
+      ["genres.name"]: selectedGenres,
+      ["rating.kp"]:ratingKp.join('-') ,
+      ["rating.imdb"]:ratingIMDb.join('-') ,
     };
     if (isTop10Checked) {
       searchFilter.top10 = SPECIAL_VALUE.NOT_NULL;
@@ -92,7 +88,6 @@ export const HomePage = () => {
       searchFilter.top250 = SPECIAL_VALUE.NOT_NULL;
     }
     setFilters(JSON.parse(JSON.stringify(searchFilter)));
-  
 
     const response = await getMoviesByFilter(
       JSON.parse(JSON.stringify(searchFilter))
@@ -107,14 +102,25 @@ export const HomePage = () => {
     }
   };
 
-  const handleGenreChange = (genre : Genre) => {
+  const handleGenreChange = (genre: Genre) => {
     setSelectedGenres((prev) => {
       if (prev.includes(genre)) {
-        return prev.filter(item => item !== genre); // Убираем жанр, если он уже выбран
+        return prev.filter((item) => item !== genre); // Убираем жанр, если он уже выбран
       } else {
         return [...prev, genre]; // Добавляем жанр в выбранные
       }
     });
+  };
+
+  const handleSliderChangeRatingKp = (event: Event, value:number | number[],activeThumb: number) => {
+    const newValue = Array.isArray(value) ? value : [value];
+    setRatingKp(newValue);
+    
+  };
+  const handleSliderChangeRatingIMDb = (event: Event, value:number | number[],activeThumb: number) => {
+    const newValue = Array.isArray(value) ? value : [value];
+    setRatingIMDb(newValue);
+    
   };
 
   // Функции для управления Popover
@@ -128,15 +134,15 @@ export const HomePage = () => {
 
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
-  
 
+ 
   return (
     <div>
       <div className="search-box-container">
         <Button variant="outlined" onClick={handleClick}>
           Фильтры
         </Button>
-        <Popover
+        <Popover className="popover"
           id={id}
           open={open}
           anchorEl={anchorEl}
@@ -171,70 +177,73 @@ export const HomePage = () => {
                 }
                 label="Топ 250"
               />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={isRatingKpChecked}
-                    onChange={(e) => setIsRatingKpChecked(e.target.checked)}
-                  />
-                }
-                label="Высокий рейтинг по версии КиноПоиска"
+              <Typography gutterBottom>Рейтинг по версии КиноПоиска</Typography>
+              <Slider
+                value={ratingKp}
+                onChange={handleSliderChangeRatingKp}
+                valueLabelDisplay="on"
+                min={1}
+                max={10}
+                step={1}
               />
-               <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={isRatingImdbChecked}
-                    onChange={(e) => setIsRatingImdbChecked(e.target.checked)}
-                  />
-                }
-                label="Высокий рейтинг по версии IMDb"
+               <Typography gutterBottom>Рейтинг по версии IMDb</Typography>
+              <Slider
+                value={ratingIMDb}
+                onChange={handleSliderChangeRatingIMDb}
+                valueLabelDisplay="on"
+                min={1}
+                max={10}
+                step={1}
               />
-              
             </Grid>
             <Grid item xs={6}>
               <Typography variant="h6">Сериалы</Typography>
               <FormControlLabel
                 control={
-                  <Checkbox 
-                  checked = {isSeriesChecked}
-                  onChange={(e) => setIsSeriesChecked(e.target.checked)} />
+                  <Checkbox
+                    checked={isSeriesChecked}
+                    onChange={(e) => setIsSeriesChecked(e.target.checked)}
+                  />
                 }
                 label="Все сериалы"
               />
               <Typography variant="h6">Жанры</Typography>
               <FormControlLabel
                 control={
-                  <Checkbox 
-                  checked = {selectedGenres.includes('криминал')}
-                  onChange={() => handleGenreChange('криминал')}/>
+                  <Checkbox
+                    checked={selectedGenres.includes("криминал")}
+                    onChange={() => handleGenreChange("криминал")}
+                  />
                 }
                 label="Криминал"
               />
               <FormControlLabel
                 control={
-                  <Checkbox 
-                  checked = {selectedGenres.includes('комедия')}
-                  onChange={() => handleGenreChange('комедия')}/>
+                  <Checkbox
+                    checked={selectedGenres.includes("комедия")}
+                    onChange={() => handleGenreChange("комедия")}
+                  />
                 }
                 label="Комедия"
               />
               <FormControlLabel
                 control={
-                  <Checkbox 
-                  checked = {selectedGenres.includes('военные')}
-                  onChange={() => handleGenreChange('военные')}/>
+                  <Checkbox
+                    checked={selectedGenres.includes("военные")}
+                    onChange={() => handleGenreChange("военные")}
+                  />
                 }
                 label="Военные"
               />
               <FormControlLabel
                 control={
-                  <Checkbox 
-                  checked = {selectedGenres.includes('фантастика')}
-                  onChange={() => handleGenreChange('фантастика')}/>
+                  <Checkbox
+                    checked={selectedGenres.includes("фантастика")}
+                    onChange={() => handleGenreChange("фантастика")}
+                  />
                 }
                 label="Фантастика"
               />
-
             </Grid>
           </Grid>
         </Popover>
