@@ -2,7 +2,6 @@ import "./HomePage.scss";
 import { useEffect, useState } from "react";
 import {
   Filter,
-  IQueryFields,
   MovieDtoV13,
   MovieFields,
   SPECIAL_VALUE,
@@ -20,13 +19,14 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { AccountCircle } from "@mui/icons-material";
 import SearchIcon from "@mui/icons-material/Search";
 
 export type moviesData = {
   totalCount: number;
   pages: number;
 };
+export type Genre = string;
+
 export const HomePage = () => {
   const [moviesData, setMoviesData] = useState<moviesData>({
     totalCount: 0,
@@ -39,9 +39,18 @@ export const HomePage = () => {
   });
   const [searchWord, setSearchWord] = useState<string>();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [isTop100Checked, setIsTop100Checked] = useState(false);
+  const [isTop10Checked, setIsTop10Checked] = useState(false);
   const [isTop250Checked, setIsTop250Checked] = useState(false);
+  const [isSeriesChecked, setIsSeriesChecked] = useState(false);
+ 
 
+  const [isRatingKpChecked, setIsRatingKpChecked] = useState(false); 
+  const [isRatingImdbChecked, setIsRatingImdbChecked] = useState(false);
+
+  const [selectedGenres, setSelectedGenres] = useState<Genre[]>([]);
+
+
+ 
   useEffect(() => {
     getMoviesByFilterHandler();
   }, []);
@@ -64,20 +73,30 @@ export const HomePage = () => {
     }
   };
   const handleSearch = async () => {
+
+    
+
     const searchFilter: Filter<MovieFields> = {
       ...filter,
       name: searchWord || undefined,
       page: 1,
+      isSeries:isSeriesChecked,
+    ["genres.name"] : selectedGenres,
+      ["rating.kp"]: isRatingKpChecked ? "1-10" : undefined, 
+      ["rating.imdb"]: isRatingImdbChecked ? "1-10" : undefined, 
     };
-    if (isTop100Checked) {
+    if (isTop10Checked) {
       searchFilter.top10 = SPECIAL_VALUE.NOT_NULL;
     }
     if (isTop250Checked) {
       searchFilter.top250 = SPECIAL_VALUE.NOT_NULL;
     }
     setFilters(JSON.parse(JSON.stringify(searchFilter)));
+  
 
-    const response = await getMoviesByFilter(JSON.parse(JSON.stringify(searchFilter)));
+    const response = await getMoviesByFilter(
+      JSON.parse(JSON.stringify(searchFilter))
+    );
     if (response.data) {
       const newMoviesData = {
         totalCount: response.data.total,
@@ -86,6 +105,16 @@ export const HomePage = () => {
       setMoviesData(newMoviesData);
       setMovies(response.data.docs);
     }
+  };
+
+  const handleGenreChange = (genre : Genre) => {
+    setSelectedGenres((prev) => {
+      if (prev.includes(genre)) {
+        return prev.filter(item => item !== genre); // Убираем жанр, если он уже выбран
+      } else {
+        return [...prev, genre]; // Добавляем жанр в выбранные
+      }
+    });
   };
 
   // Функции для управления Popover
@@ -99,6 +128,7 @@ export const HomePage = () => {
 
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
+  
 
   return (
     <div>
@@ -120,29 +150,96 @@ export const HomePage = () => {
             horizontal: "left",
           }}
         >
-          <div >
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={isTop100Checked}
-                  onChange={(e) => setIsTop100Checked(e.target.checked)}
-                />
-              }
-              label="Тор 100"
-            />
-             <FormControlLabel
-              control={
-                <Checkbox
-                  checked={isTop250Checked}
-                  onChange={(e) => setIsTop250Checked(e.target.checked)}
-                />
-              }
-              label="Тор 250"
-            />
-          </div>
+          <Grid container spacing={2} padding={2}>
+            <Grid item xs={6}>
+              <Typography variant="h6">Фильмы</Typography>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={isTop10Checked}
+                    onChange={(e) => setIsTop10Checked(e.target.checked)}
+                  />
+                }
+                label="Топ 10"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={isTop250Checked}
+                    onChange={(e) => setIsTop250Checked(e.target.checked)}
+                  />
+                }
+                label="Топ 250"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={isRatingKpChecked}
+                    onChange={(e) => setIsRatingKpChecked(e.target.checked)}
+                  />
+                }
+                label="Высокий рейтинг по версии КиноПоиска"
+              />
+               <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={isRatingImdbChecked}
+                    onChange={(e) => setIsRatingImdbChecked(e.target.checked)}
+                  />
+                }
+                label="Высокий рейтинг по версии IMDb"
+              />
+              
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="h6">Сериалы</Typography>
+              <FormControlLabel
+                control={
+                  <Checkbox 
+                  checked = {isSeriesChecked}
+                  onChange={(e) => setIsSeriesChecked(e.target.checked)} />
+                }
+                label="Все сериалы"
+              />
+              <Typography variant="h6">Жанры</Typography>
+              <FormControlLabel
+                control={
+                  <Checkbox 
+                  checked = {selectedGenres.includes('криминал')}
+                  onChange={() => handleGenreChange('криминал')}/>
+                }
+                label="Криминал"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox 
+                  checked = {selectedGenres.includes('комедия')}
+                  onChange={() => handleGenreChange('комедия')}/>
+                }
+                label="Комедия"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox 
+                  checked = {selectedGenres.includes('военные')}
+                  onChange={() => handleGenreChange('военные')}/>
+                }
+                label="Военные"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox 
+                  checked = {selectedGenres.includes('фантастика')}
+                  onChange={() => handleGenreChange('фантастика')}/>
+                }
+                label="Фантастика"
+              />
+
+            </Grid>
+          </Grid>
         </Popover>
-        <Grid className="search-word"  >
-          <TextField 
+        <Grid className="search-word">
+          <TextField
             variant="outlined"
             value={searchWord}
             onChange={(e) => setSearchWord(e.target.value)}
@@ -154,7 +251,7 @@ export const HomePage = () => {
               ),
             }}
           />
-          <Button 
+          <Button
             variant="contained"
             className="search-box-button"
             onClick={handleSearch}
@@ -164,26 +261,13 @@ export const HomePage = () => {
         </Grid>
       </div>
 
-      <Grid 
-        container
-        spacing={3}
-        columns={{ xs: 4, md: 12 }}
-      >
-        <Grid className="text- button- container"
-          item
-          xs={12}
-          md={12}
-        >
-          <Typography className="text"
-            component="span"
-          >
+      <Grid container spacing={3} columns={{ xs: 4, md: 12 }}>
+        <Grid className="text- button- container" item xs={12} md={12}>
+          <Typography className="text" component="span">
             {" "}
             Все{" "}
           </Typography>
-          <Typography
-            component="span"
-           
-          >
+          <Typography component="span">
             {" "}
             {`(${moviesData?.totalCount})`}
           </Typography>
@@ -209,4 +293,3 @@ export const HomePage = () => {
     </div>
   );
 };
- 
