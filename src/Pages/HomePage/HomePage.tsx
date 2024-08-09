@@ -1,5 +1,5 @@
 import "./HomePage.scss";
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Filter,
   MovieDtoV13,
@@ -21,6 +21,7 @@ import {
   Typography,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import { Link } from "react-router-dom";
 
 export type moviesData = {
   totalCount: number;
@@ -45,10 +46,8 @@ export const HomePage = () => {
   const [isSeriesChecked, setIsSeriesChecked] = useState(false);
   const [selectedGenres, setSelectedGenres] = useState<Genre[]>([]);
 
- 
   const [ratingKp, setRatingKp] = useState<number[]>([1, 10]);
   const [ratingIMDb, setRatingIMDb] = useState<number[]>([1, 10]);
-
 
   useEffect(() => {
     getMoviesByFilterHandler();
@@ -78,8 +77,8 @@ export const HomePage = () => {
       page: 1,
       isSeries: isSeriesChecked,
       ["genres.name"]: selectedGenres,
-      ["rating.kp"]:ratingKp.join('-') ,
-      ["rating.imdb"]:ratingIMDb.join('-') ,
+      ["rating.kp"]: ratingKp.join("-"),
+      ["rating.imdb"]: ratingIMDb.join("-"),
     };
     if (isTop10Checked) {
       searchFilter.top10 = SPECIAL_VALUE.NOT_NULL;
@@ -112,15 +111,21 @@ export const HomePage = () => {
     });
   };
 
-  const handleSliderChangeRatingKp = (event: Event, value:number | number[],activeThumb: number) => {
+  const handleSliderChangeRatingKp = (
+    event: Event,
+    value: number | number[],
+    activeThumb: number
+  ) => {
     const newValue = Array.isArray(value) ? value : [value];
     setRatingKp(newValue);
-    
   };
-  const handleSliderChangeRatingIMDb = (event: Event, value:number | number[],activeThumb: number) => {
+  const handleSliderChangeRatingIMDb = (
+    event: Event,
+    value: number | number[],
+    activeThumb: number
+  ) => {
     const newValue = Array.isArray(value) ? value : [value];
     setRatingIMDb(newValue);
-    
   };
 
   // Функции для управления Popover
@@ -135,14 +140,14 @@ export const HomePage = () => {
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
 
- 
   return (
     <div>
       <div className="search-box-container">
         <Button variant="outlined" onClick={handleClick}>
           Фильтры
         </Button>
-        <Popover className="popover"
+        <Popover
+          className="popover"
           id={id}
           open={open}
           anchorEl={anchorEl}
@@ -186,7 +191,7 @@ export const HomePage = () => {
                 max={10}
                 step={1}
               />
-               <Typography gutterBottom>Рейтинг по версии IMDb</Typography>
+              <Typography gutterBottom>Рейтинг по версии IMDb</Typography>
               <Slider
                 value={ratingIMDb}
                 onChange={handleSliderChangeRatingIMDb}
@@ -284,14 +289,16 @@ export const HomePage = () => {
         {movies?.map((movie: MovieDtoV13) => {
           return (
             <Grid key={movie.id} item md={3}>
-              <FilmPreviewCard
-                alternativeName={
-                  movie.alternativeName ? movie.alternativeName : ""
-                }
-                name={movie.name}
-                grade={movie.rating?.kp || 0}
-                img={movie.poster?.url}
-              />
+              <Link to={`movie/${movie.id}`}>
+                <FilmPreviewCard
+                  alternativeName={
+                    movie.alternativeName ? movie.alternativeName : ""
+                  }
+                  name={movie.name}
+                  grade={movie.rating?.kp || 0}
+                  img={movie.poster?.url}
+                />
+              </Link>
             </Grid>
           );
         })}
