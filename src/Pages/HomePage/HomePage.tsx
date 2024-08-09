@@ -289,7 +289,7 @@ export const HomePage = () => {
                   movie.alternativeName ? movie.alternativeName : ""
                 }
                 name={movie.name}
-                grade={23}
+                grade={movie.rating?.kp || 0}
                 img={movie.poster?.url}
               />
             </Grid>
