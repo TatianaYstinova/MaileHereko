@@ -289,16 +289,20 @@ export const HomePage = () => {
         {movies?.map((movie: MovieDtoV13) => {
           return (
             <Grid key={movie.id} item md={3}>
-              <Link to={`movie/${movie.id}`}>
-                <FilmPreviewCard
-                  alternativeName={
-                    movie.alternativeName ? movie.alternativeName : ""
-                  }
-                  name={movie.name}
-                  grade={movie.rating?.kp || 0}
-                  img={movie.poster?.url}
-                />
-              </Link>
+              <FilmPreviewCard
+                alternativeName={
+                  movie.alternativeName ? movie.alternativeName : ""
+                }
+                name={movie.name}
+                grade={movie.rating?.kp || 0}
+                img={movie.poster?.url}
+              />
+              <Button
+                variant="contained"
+                onClick={() => window.location.href = `home/movie/${movie.id}`} 
+              >
+                Перейти к фильму
+              </Button>
             </Grid>
           );
         })}
