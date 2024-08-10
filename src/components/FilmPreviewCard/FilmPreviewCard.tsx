@@ -2,6 +2,7 @@ import { Box, Card, CardContent, CardMedia, CircularProgress, Rating, Typography
 import theme from "../../theme"
 import { RatingStar } from "../../assets/svg/RatingStar"
 import { useEffect, useState } from "react"
+import { MovieRatingEditor } from "../MovieRatingEditor/MovieRatingEditor"
 
 /* 
 компонент карточки фильма
@@ -32,7 +33,7 @@ export const FilmPreviewCard = (props: FilmPreviewCardProps) => {
         (isLoading ? <CircularProgress /> : <Card sx={{ maxWidth: 284, maxHeight: 480, p: 2, borderRadius: '12px', position: 'relative' }}>
             <Box sx={{ position: 'absolute', display: 'flex', alignItems: 'center', paddingX: 1, paddingY: 1.5, gap: '4px', backgroundColor: '#000000A6', borderRadius: '8px', mt: 1.3, ml: 1 }} >
                 <Typography component="span" sx={{ color: '#FFBD6D' }}>{props.grade.toFixed(1)}</Typography>
-                <Rating max={1} name="simple-controlled" value={1} icon={<RatingStar />} />
+                <MovieRatingEditor/>
             </Box>
             <CardMedia
                 component="img"
