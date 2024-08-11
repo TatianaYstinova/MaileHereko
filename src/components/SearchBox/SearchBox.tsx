@@ -14,9 +14,9 @@ import { getMoviesByFilter } from "../../entities/movie/api/get-by-filters";
 import { moviesData } from "../../Pages/HomePage/HomePage";
 
 interface SearchBoxProps {
-    setFilters: React.Dispatch<React.SetStateAction<Filter<MovieFields>>>;
-    setMoviesData: React.Dispatch<React.SetStateAction<moviesData>>;
-    setMovies: React.Dispatch<React.SetStateAction<MovieDtoV13[]>>;
+    setFilters:(param:Filter<MovieFields>)=>void;
+    setMoviesData:(param:moviesData)=>void;
+    setMovies:(param:MovieDtoV13[])=> void;
   }
 
 export type Genre = string;
@@ -83,17 +83,17 @@ export const SearchBox : React.FC<SearchBoxProps> = ({ setFilters , setMoviesDat
     };
 
     const handleSliderChangeRatingKp = (
-        event: Event,
+        _event: Event,
         value: number | number[],
-        activeThumb: number
+        _activeThumb: number
     ) => {
         const newValue = Array.isArray(value) ? value : [value];
         setRatingKp(newValue);
     };
     const handleSliderChangeRatingIMDb = (
-        event: Event,
+        _event: Event,
         value: number | number[],
-        activeThumb: number
+        _activeThumb: number
     ) => {
         const newValue = Array.isArray(value) ? value : [value];
         setRatingIMDb(newValue);
