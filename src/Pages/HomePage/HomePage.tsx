@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 
 import { SearchBox } from "../../components/SearchBox/SearchBox";
+import { Link } from "react-router-dom";
 
 
 export type moviesData = {
@@ -74,6 +75,7 @@ export const HomePage = () => {
         {movies?.map((movie: MovieDtoV13) => {
           return (
             <Grid key={movie.id} item md={3}>
+              <Link to={`/movie/${movie.id}`}>
               <FilmPreviewCard
                 alternativeName={
                   movie.alternativeName ? movie.alternativeName : ""
@@ -82,12 +84,8 @@ export const HomePage = () => {
                 grade={movie.rating?.kp || 0}
                 img={movie.poster?.url}
               />
-              <Button
-                variant="contained"
-                onClick={() => window.location.href = `home/movie/${movie.id}`} 
-              >
-                Перейти к фильму
-              </Button>
+              </Link>
+             
             </Grid>
           );
         })}
