@@ -8,7 +8,6 @@ import {
 import { getMoviesByFilter } from "../../entities/movie/api/get-by-filters";
 import { FilmPreviewCard } from "../../components/FilmPreviewCard/FilmPreviewCard";
 import {
-  Button,
   ButtonBase,
   Grid,
   Typography,

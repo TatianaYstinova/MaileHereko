@@ -36,6 +36,7 @@ export const MovieRatingEditor: React.FC<MovieRatingEditorProps> = ({
   useEffect(() => {
     if (scores) {
       const existingScore = scores.find((score) =>score.movieId === movieId && score.userId === userId);
+      console.log({scores})
       if (existingScore) {
         setRatingValue(existingScore.grade);
       } else {
@@ -74,28 +75,41 @@ export const MovieRatingEditor: React.FC<MovieRatingEditorProps> = ({
     _event: React.SyntheticEvent<Element, Event>,
     value: number | null
   ) => {
-    setRatingValue(Number(value));
-    handleClose();
+    if(value === ratingValue){
+      setRatingValue(null);
+    }else{
+      setRatingValue(Number(value));
+      
+      const existingScore = scores?.find((score) => score.movieId === movieId);
 
-    // Проверка, существует ли уже оценка, чтобы определить, нужно ли создать или обновить
-    const existingScore = scores?.find((score) => score.userId === userId);
-
-    if (existingScore) {
-      // Если оценка уже существует, обновляем её
-      updateMutation.mutate({
-        id: existingScore.id,
-        userId: userId,
-        movieId: movieId,
-        grade: Number(value),
-      });
-    } else {
-      // Если оценки нет, создаем новую
-      addMutation.mutate({ userId, movieId, grade: Number(value) });
+      if (existingScore) {
+        updateMutation.mutate({
+          id: existingScore.id,
+          userId: userId,
+          movieId: movieId,
+          grade: Number(value),
+        });
+      } else {
+        addMutation.mutate({ userId, movieId, grade: Number(value) });
+      }
     }
+    handleClose();
   };
 
   const open = Boolean(anchorEl);
   const openModal = open ? "simple-popover" : undefined;
+
+  const getCircleColor = () => {
+    if (ratingValue !== null) {
+      if (ratingValue >= 1 && ratingValue <= 4) return 'low-rating';
+      if (ratingValue >= 5 && ratingValue <= 8) return 'medium-rating';
+      if (ratingValue >= 9 && ratingValue <= 10) return 'high-rating';
+  
+    }
+    return 'transparent';
+  };
+
+ 
 
   return (
     <>
@@ -105,7 +119,7 @@ export const MovieRatingEditor: React.FC<MovieRatingEditorProps> = ({
         style={{ position: "relative" }}
       >
         {ratingValue !== null ? (
-          <span className="viewer-rating">{ratingValue}</span>
+          <span className={`viewer-rating ${getCircleColor()}`}>{ratingValue}</span>
         ) : null}
         <img src={Star} alt="star" />
       </Button>
@@ -128,6 +142,7 @@ export const MovieRatingEditor: React.FC<MovieRatingEditorProps> = ({
         {" "}
         <Rating
           name="size-medium"
+          max={10}
           onChange={handleRatingChange}
           onClick={(event) => {
             event.stopPropagation();

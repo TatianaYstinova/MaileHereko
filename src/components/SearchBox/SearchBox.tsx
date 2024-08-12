@@ -12,6 +12,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { Filter, MovieDtoV13, MovieFields, SPECIAL_VALUE } from "@openmoviedb/kinopoiskdev_client";
 import { getMoviesByFilter } from "../../entities/movie/api/get-by-filters";
 import { moviesData } from "../../Pages/HomePage/HomePage";
+import './SearchBoc.scss'
 
 interface SearchBoxProps {
     setFilters:(param:Filter<MovieFields>)=>void;
@@ -32,7 +33,7 @@ export const SearchBox : React.FC<SearchBoxProps> = ({ setFilters , setMoviesDat
     const [ratingKp, setRatingKp] = useState<number[]>([1, 10]);
     const [ratingIMDb, setRatingIMDb] = useState<number[]>([1, 10]);
 
-
+    const [selectedFilterLabel, setSelectedFilterLabel] = useState<string | null>(null);
 
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -40,6 +41,17 @@ export const SearchBox : React.FC<SearchBoxProps> = ({ setFilters , setMoviesDat
 
     const handleClose = () => {
         setAnchorEl(null);
+    };
+
+    const updateFilterLabel = () => {
+      const filters: string[] = [];
+  
+      if (isTop10Checked) filters.push('Топ 10');
+      if (isTop250Checked) filters.push('Топ 250');
+      if (isSeriesChecked) filters.push('Сериалы');
+      selectedGenres.forEach((genre) => filters.push(genre));
+  
+      setSelectedFilterLabel(filters.length > 0 ? filters.join(', ') : null);
     };
 
     const handleSearch = async () => {
@@ -73,13 +85,13 @@ export const SearchBox : React.FC<SearchBoxProps> = ({ setFilters , setMoviesDat
         }
     };
     const handleGenreChange = (genre: Genre) => {
-        setSelectedGenres((prev) => {
-            if (prev.includes(genre)) {
-                return prev.filter((item) => item !== genre); // Убираем жанр, если он уже выбран
-            } else {
-                return [...prev, genre]; // Добавляем жанр в выбранные
-            }
-        });
+      setSelectedGenres((prev) => {
+        const newGenres = prev.includes(genre)
+          ? prev.filter((item) => item !== genre)
+          : [...prev, genre];
+        updateFilterLabel(); 
+        return newGenres;
+      });
     };
 
     const handleSliderChangeRatingKp = (
@@ -99,13 +111,24 @@ export const SearchBox : React.FC<SearchBoxProps> = ({ setFilters , setMoviesDat
         setRatingIMDb(newValue);
     };
 
+    const clearFilters = () => {
+      setIsTop10Checked(false);
+      setIsTop250Checked(false);
+      setIsSeriesChecked(false);
+      setSelectedGenres([]);
+      setRatingKp([1, 10]);
+      setRatingIMDb([1, 10]);
+      setSearchWord('');
+      setSelectedFilterLabel(null); // Очистить метку фильтра
+    };
+
 
     const open = Boolean(anchorEl);
     const id = open ? "simple-popover" : undefined;
 
     return (
         <div className="search-box-container">
-          <Button variant="outlined" onClick={handleClick}>
+          <Button variant="outlined" onClick={handleClick} className="filter-button">
             Фильтры
           </Button>
           <Popover
@@ -235,6 +258,16 @@ export const SearchBox : React.FC<SearchBoxProps> = ({ setFilters , setMoviesDat
               Поиск
             </Button>
           </Grid>
+          {selectedFilterLabel && (
+        <div className="selected-filter">
+          <Typography variant="subtitle1" sx={{widows:"300px",color:"white"}}>
+            {selectedFilterLabel}
+            <Button onClick={clearFilters} style={{ marginLeft: '8px' }}>
+              ✖
+            </Button>
+          </Typography>
+        </div>
+      )}
         </div>
       );
     
