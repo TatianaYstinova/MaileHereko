@@ -11,8 +11,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import React from "react";
 import { TOKEN } from "../../shared/kp-client";
-import { useParams } from "react-router-dom";
-import { getMovieById } from "../../entities/movie";
+
 
 interface MovieRatingEditorProps {
   movieId: number;
@@ -36,14 +35,14 @@ export const MovieRatingEditor: React.FC<MovieRatingEditorProps> = ({
   // useEffect для установки значения рейтинга из загруженных оценок
   useEffect(() => {
     if (scores) {
-      const existingScore = scores.find((score) => score.movieId === movieId);
+      const existingScore = scores.find((score) =>score.movieId === movieId && score.userId === userId);
       if (existingScore) {
         setRatingValue(existingScore.grade);
       } else {
         setRatingValue(null);
       }
     }
-  }, [scores, userId]);
+  }, [scores, userId, movieId]);
   
 
   // Мутация для добавления новой оценки
