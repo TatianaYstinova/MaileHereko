@@ -1,6 +1,5 @@
-import { Box, Card, CardContent, CardMedia, CircularProgress, Rating, Typography } from "@mui/material"
+import { Box, Card, CardContent, CardMedia, CircularProgress, Typography } from "@mui/material"
 import theme from "../../theme"
-import { RatingStar } from "../../assets/svg/RatingStar"
 import { useEffect, useState } from "react"
 import { MovieRatingEditor } from "../MovieRatingEditor/MovieRatingEditor"
 
@@ -14,6 +13,8 @@ export type FilmPreviewCardProps = {
     alternativeName: string,
     grade: number,
     img: string | undefined
+    movieId: number, 
+     
 }
 export const FilmPreviewCard = (props: FilmPreviewCardProps) => {
     const [isLoading, setIsLoading] = useState(true);
@@ -33,7 +34,7 @@ export const FilmPreviewCard = (props: FilmPreviewCardProps) => {
         (isLoading ? <CircularProgress /> : <Card sx={{ maxWidth: 284, maxHeight: 480, p: 2, borderRadius: '12px', position: 'relative' }}>
             <Box sx={{ position: 'absolute', display: 'flex', alignItems: 'center', paddingX: 1, paddingY: 1.5, gap: '4px', backgroundColor: '#000000A6', borderRadius: '8px', mt: 1.3, ml: 1 }} >
                 <Typography component="span" sx={{ color: '#FFBD6D' }}>{props.grade.toFixed(1)}</Typography>
-                <MovieRatingEditor/>
+                <MovieRatingEditor movieId={props.movieId} />
             </Box>
             <CardMedia
                 component="img"

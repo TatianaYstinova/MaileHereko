@@ -76,7 +76,7 @@ export const HomePage = () => {
           return (
             <Grid key={movie.id} item md={3}>
               <Link to={`/movie/${movie.id}`}>
-              <FilmPreviewCard
+              <FilmPreviewCard movieId={movie.id}
                 alternativeName={
                   movie.alternativeName ? movie.alternativeName : ""
                 }
