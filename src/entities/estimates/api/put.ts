@@ -7,7 +7,7 @@ interface EvaluationUpdateParameters {
 
 export const EvaluationUpdate = async (params: EvaluationUpdateParameters) => {
     try {
-        const response = await fetch('http://localhost:777/filmScores/${params.id}', {
+        const response = await fetch(`http://localhost:777/filmScores/${params.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -15,7 +15,8 @@ export const EvaluationUpdate = async (params: EvaluationUpdateParameters) => {
             body: JSON.stringify({
                 userId: params.userId,
                 movieId: params.movieId,
-                grade: params.grade
+                grade: params.grade,
+                id:params.id
             }),
         });
 
