@@ -33,6 +33,7 @@ const theme = createTheme({
     MuiLink: {
       defaultProps: {
         color: '#ffffff',
+        fontFamily: "Poppins, sans-serif",
       }
     },
     MuiButtonBase: {
