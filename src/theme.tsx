@@ -81,6 +81,14 @@ const theme = createTheme({
           alignItems: "center",
         }
       }
+    },
+    MuiButton :{
+      styleOverrides :{
+        root:{
+          display:"flex",
+          background:"transparent"
+        }
+      }
     }
   },
 });

@@ -66,7 +66,7 @@ export const HomePage = () => {
             {" "}
             Все{" "}
           </Typography>
-          <Typography component="span">
+          <Typography className="quantity" component="span">
             {" "}
             {`(${moviesData?.totalCount})`}
           </Typography>

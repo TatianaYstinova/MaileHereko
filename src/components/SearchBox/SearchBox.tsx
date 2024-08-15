@@ -12,7 +12,8 @@ import SearchIcon from "@mui/icons-material/Search";
 import { Filter, MovieDtoV13, MovieFields, SPECIAL_VALUE } from "@openmoviedb/kinopoiskdev_client";
 import { getMoviesByFilter } from "../../entities/movie/api/get-by-filters";
 import { moviesData } from "../../Pages/HomePage/HomePage";
-import './SearchBoc.scss'
+import filter from '../../assets/filter.png';
+import './SearchBox.scss'
 
 interface SearchBoxProps {
     setFilters:(param:Filter<MovieFields>)=>void;
@@ -127,8 +128,9 @@ export const SearchBox : React.FC<SearchBoxProps> = ({ setFilters , setMoviesDat
     const id = open ? "simple-popover" : undefined;
 
     return (
-        <div className="search-box-container">
+        <>
           <Button variant="outlined" onClick={handleClick} className="filter-button">
+            <img src={filter} alt=""/>
             Фильтры
           </Button>
           <Popover
@@ -148,7 +150,7 @@ export const SearchBox : React.FC<SearchBoxProps> = ({ setFilters , setMoviesDat
           >
             <Grid container spacing={2} padding={2}>
               <Grid item xs={6}>
-                <Typography variant="h6">Фильмы</Typography>
+                <Typography  className="form-control-label" variant="h6">Фильмы</Typography>
                 <FormControlLabel
                   control={
                     <Checkbox
@@ -268,7 +270,7 @@ export const SearchBox : React.FC<SearchBoxProps> = ({ setFilters , setMoviesDat
           </Typography>
         </div>
       )}
-        </div>
+        </>
       );
     
 };
