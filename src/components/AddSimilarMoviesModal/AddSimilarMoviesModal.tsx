@@ -3,14 +3,12 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { MovieDocsResponseDtoV13 } from "@openmoviedb/kinopoiskdev_client";
 import { useState } from "react";
 import { getAllMoviesFilter } from "../../entities/movie";
 import Button from "@mui/material/Button";
 import { addToSimilarMovies } from "../../entities/moviesSelection/api";
 import {
   MoviesSelection,
-  getSimilarMovies,
 } from "../../entities/moviesSelection";
 import {
   QueryObserverResult,
@@ -18,8 +16,8 @@ import {
   RefetchQueryFilters,
   useMutation,
   useQuery,
-  useQueryClient,
 } from "react-query";
+import './AddSimilarMoviesModal.scss';
 
 interface AddSimilarMoviesModalProps {
   isOpenModalSelectionMovies: boolean;
@@ -76,10 +74,9 @@ export function AddSimilarMoviesModal({
       <Box className="modal-style-box">
         <Typography id="modal-modal-title">Введите название фильма:</Typography>
         <Typography
-          className="picture-modal-title"
           id="modal-modal-description"
         >
-          <Autocomplete
+          <Autocomplete className="picture-modal-title"
             value={value}
             onChange={(_, newValue) => setValue(newValue)}
             disablePortal
@@ -92,11 +89,9 @@ export function AddSimilarMoviesModal({
           />
         </Typography>
         <Button
-          className="addition"
-          variant="contained"
           onClick={handleAddMovie}
         >
-          Добавить
+          Выбрать
         </Button>
       </Box>
     </Modal>

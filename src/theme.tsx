@@ -42,7 +42,6 @@ const theme = createTheme({
           border: "2px solid #7B6EF6",
           fontFamily: "Poppins, sans-serif",
           borderRadius: '12px', 
-          color: 'white',
           fontWeight: 400,
           fontSize: '16px',
           lineHight: '24px',
