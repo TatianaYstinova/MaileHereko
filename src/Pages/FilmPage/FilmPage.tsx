@@ -18,9 +18,7 @@ import Modal from "@mui/material/Modal/Modal";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import thankYou from "../../assets/thankyou.png";
-import {
-  getSimilarMovies
-} from "../../entities/moviesSelection";
+import { getSimilarMovies } from "../../entities/moviesSelection";
 
 import Link from "@mui/material/Link/Link";
 import { useParams } from "react-router";
@@ -28,6 +26,8 @@ import { useParams } from "react-router";
 import { AddSimilarMoviesModal } from "../../components/AddSimilarMoviesModal/AddSimilarMoviesModal";
 import CardElement from "../../components/CardElement/CardElement";
 import Skeleton from "@mui/material/Skeleton";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { setFavorites, setMovies } from "./FilmPageSlice";
 
 export const FilmPage = () => {
   const { id } = useParams();
@@ -37,24 +37,39 @@ export const FilmPage = () => {
     useState(false);
   const [isOpenModalSelectionMovies, setIsOpenModalSelectionMovies] =
     useState(false);
+  const dispatch = useAppDispatch();
+
+  //  данные из состояния Redux
+  const movie = useAppSelector((state) => state.filmPage.movie);
+  const favorites = useAppSelector((state) => state.filmPage.favorites);
 
   // Запрос на получение фильма по ID
-  const {
-    data: movie,
-    isLoading: isLoadingMovie
-  } = useQuery(["movie", id], () => getMovieById(Number(id)), {
-    enabled: !!id,
-  });
+  const { isLoading: isLoadingMovie } = useQuery(
+    ["movie", id],
+    () => getMovieById(Number(id)),
+    {
+      enabled: !!id,
+      onSuccess: (data) => {
+        dispatch(setMovies({ movie: data }));
+      },
+    }
+  );
 
   // Запрос на получение избранных фильмов
-  const { data: favorites, isLoading: isLoadingFavorites } = useQuery(
+  const { isLoading: isLoadingFavorites } = useQuery(
     ["favorites", userId],
-    () => getFavorites(userId)
+    () => getFavorites(userId),
+    {
+      onSuccess: (data) => {
+        dispatch(setFavorites({ favoriteMovie: data }));
+      },
+    }
   );
-  
-  const isInFavorites = favorites?.some(
-    ({ favoritedMovieId }) => favoritedMovieId === movie?.data?.id
-  ) || false;
+
+  const isInFavorites =
+    favorites?.some(
+      ({ favoritedMovieId }) => favoritedMovieId === movie?.data?.id
+    ) || false;
 
   const favoriteMovie =
     favorites?.find(
@@ -131,7 +146,7 @@ export const FilmPage = () => {
         <div className="img-poster">
           <img
             className="poster-header"
-            src={movie?.data?.poster?.url || 'Нет постера'}
+            src={movie?.data?.poster?.url || "Нет постера"}
             alt="poster"
           />
         </div>
@@ -143,18 +158,19 @@ export const FilmPage = () => {
       <div className="filmCard-container">
         {movie?.data && <FilmCard {...movie?.data} />}
         <div className="button-container">
-        {addFavoriteMutation.isLoading || deleteFavoriteMutation.isLoading || isLoadingFavorites ?
-        (
-          <Skeleton variant="rectangular" width={210} height={50} />
-        ) :(
-          <Button
-            className="film-button"
-            variant="contained"
-            onClick={handleToggleFavorite}
-          >
-            {isInFavorites ? "Удалить из избранного" : "Добавить в избранное"}
-          </Button>
-        )}
+          {addFavoriteMutation.isLoading ||
+          deleteFavoriteMutation.isLoading ||
+          isLoadingFavorites ? (
+            <Skeleton variant="rectangular" width={210} height={50} />
+          ) : (
+            <Button
+              className="film-button"
+              variant="contained"
+              onClick={handleToggleFavorite}
+            >
+              {isInFavorites ? "Удалить из избранного" : "Добавить в избранное"}
+            </Button>
+          )}
           <Modal
             open={isOpenModalFavoriteMovie}
             onClose={() => setIsOpenModalFavoriteMovie(false)}
