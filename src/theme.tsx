@@ -58,7 +58,7 @@ const theme = createTheme({
         root:{
           width:"100%",
           display:"flex",
-          border:"1px solid #ffffff",
+          borderRadius:"12px"
           
         }
       }
@@ -73,7 +73,7 @@ const theme = createTheme({
     MuiGrid:{
       styleOverrides:{
         root:{
-          justifyContent: "center",
+          justifyContent: "space-between",
           maxWidth: "1200px",
           margin: "auto",
           position: "relative",
@@ -85,7 +85,22 @@ const theme = createTheme({
       styleOverrides :{
         root:{
           display:"flex",
-          background:"transparent"
+          background:"transparent",
+          color:"#ffffff"
+        }
+      }
+    },
+    MuiInputBase:{
+      styleOverrides:{
+        root:{
+          color:"#f9f9f9"
+        }
+      }
+    },
+    MuiSvgIcon:{
+      styleOverrides:{
+        root:{
+          color:"#f9f9f9"
         }
       }
     }
