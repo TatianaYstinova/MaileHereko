@@ -3,14 +3,13 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { MovieDocsResponseDtoV13 } from "@openmoviedb/kinopoiskdev_client";
+
 import { useState } from "react";
 import { getAllMoviesFilter } from "../../entities/movie";
 import Button from "@mui/material/Button";
 import { addToSimilarMovies } from "../../entities/moviesSelection/api";
 import {
   MoviesSelection,
-  getSimilarMovies,
 } from "../../entities/moviesSelection";
 import {
   QueryObserverResult,
@@ -18,7 +17,7 @@ import {
   RefetchQueryFilters,
   useMutation,
   useQuery,
-  useQueryClient,
+  
 } from "react-query";
 
 interface AddSimilarMoviesModalProps {

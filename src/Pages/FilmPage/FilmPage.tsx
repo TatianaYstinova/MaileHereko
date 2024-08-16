@@ -27,7 +27,7 @@ import { AddSimilarMoviesModal } from "../../components/AddSimilarMoviesModal/Ad
 import CardElement from "../../components/CardElement/CardElement";
 import Skeleton from "@mui/material/Skeleton";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { setFavorites, setMovies } from "./FilmPageSlice";
+import { filmPageActions } from "./FilmPageSlice";
 
 export const FilmPage = () => {
   const { id } = useParams();
@@ -42,6 +42,7 @@ export const FilmPage = () => {
   //  данные из состояния Redux
   const movie = useAppSelector((state) => state.filmPage.movie);
   const favorites = useAppSelector((state) => state.filmPage.favorites);
+  const similarMovies = useAppSelector((state)=>state.filmPage.similarMovies)
 
   // Запрос на получение фильма по ID
   const { isLoading: isLoadingMovie } = useQuery(
@@ -50,18 +51,17 @@ export const FilmPage = () => {
     {
       enabled: !!id,
       onSuccess: (data) => {
-        dispatch(setMovies({ movie: data }));
+        dispatch(filmPageActions.setMovie({ movie: data }));
       },
     }
   );
 
-  // Запрос на получение избранных фильмов
   const { isLoading: isLoadingFavorites } = useQuery(
     ["favorites", userId],
     () => getFavorites(userId),
     {
       onSuccess: (data) => {
-        dispatch(setFavorites({ favoriteMovie: data }));
+        dispatch(filmPageActions.setFavorites({ favoriteMovie: data }));
       },
     }
   );
@@ -76,7 +76,7 @@ export const FilmPage = () => {
       ({ favoritedMovieId }) => favoritedMovieId === movie?.data?.id
     ) || null;
 
-  // Мутация для добавления в избранное
+  
   const addFavoriteMutation = useMutation(addToFavorites, {
     onSuccess: () => {
       queryClient.invalidateQueries(["favorites", userId]);
@@ -84,7 +84,6 @@ export const FilmPage = () => {
     },
   });
 
-  // Мутация для удаления из избранного
   const deleteFavoriteMutation = useMutation(deleteFromFavoritesApi, {
     onSuccess: () => {
       queryClient.invalidateQueries(["favorites", userId]);
@@ -109,19 +108,21 @@ export const FilmPage = () => {
     }
   };
 
-  // Запрос на получение  похожих фильмов
-  const { data: similarMoviesData, refetch } = useQuery(
+  const {  refetch } = useQuery(
     "similarMoviesFromMyServer",
     () => getSimilarMovies(Number(movie?.data?.id)),
     {
       enabled: !!movie,
+      onSuccess:(data)=>{
+        dispatch(filmPageActions.setSimilarMovies({similarMovies:data}))
+      }
     }
   );
 
   const { data: similarFromKp } = useQuery(
-    ["similarMovies", similarMoviesData],
+    ["similarMovies", similarMovies],
     async () => {
-      const similarMovieIds = similarMoviesData?.map(
+      const similarMovieIds = similarMovies?.map(
         (similarMovies) => similarMovies.similarMovieId
       );
       return similarMovieIds && similarMovieIds.length
@@ -129,7 +130,7 @@ export const FilmPage = () => {
         : null;
     },
     {
-      enabled: !!similarMoviesData,
+      enabled: !!similarMovies,
     }
   );
 
@@ -137,7 +138,7 @@ export const FilmPage = () => {
   const isMovieIdValid = typeof movieId === "number";
 
   if (isLoadingMovie) {
-    return <div className="download">Загрузка...</div>; // Индикатор загрузки
+    return <div className="download">Загрузка...</div>; 
   }
 
   return (

@@ -1,4 +1,4 @@
-export interface MoviesSelection{
+export interface SimiralMovie{
     id:number,
     movieId:number,
     similarMovieId:number
