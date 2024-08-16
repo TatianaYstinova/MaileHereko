@@ -1,7 +1,4 @@
 interface DeletingAnAssessmentParametrs{
-    userId: string;
-    movieId: number;
-    grade: number;
     id:number;
 }
 export const DeletingAnAssessment = async (params:DeletingAnAssessmentParametrs)=>
@@ -12,12 +9,6 @@ export const DeletingAnAssessment = async (params:DeletingAnAssessmentParametrs)
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    userId: params.userId,
-                    movieId: params.movieId,
-                    grade: params.grade,
-                    id:params.id
-                }),
             });
     
             if (!response.ok) {

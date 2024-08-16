@@ -88,9 +88,6 @@ export const MovieRatingEditor: React.FC<MovieRatingEditorProps> = ({
       if (value === null) {
         deleteMutation.mutate({
           id: existingScore.id,
-          userId: userId,
-          movieId: movieId,
-          grade: Number(value),
         })
       } else {
         updateMutation.mutate({
