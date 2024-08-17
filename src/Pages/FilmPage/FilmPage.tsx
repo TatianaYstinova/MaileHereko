@@ -44,7 +44,6 @@ export const FilmPage = () => {
   const favorites = useAppSelector((state) => state.filmPage.favorites);
   const similarMovies = useAppSelector((state)=>state.filmPage.similarMovies)
 
-  // Запрос на получение фильма по ID
   const { isLoading: isLoadingMovie } = useQuery(
     ["movie", id],
     () => getMovieById(Number(id)),

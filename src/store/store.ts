@@ -1,10 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { filmPageReducer } from '../Pages/FilmPage/FilmPageSlice';
+import { homePageReducer } from '../Pages/HomePage/HomePageSlice';
 
 
 export const store = configureStore({
   reducer: {
     filmPage: filmPageReducer,
+    homePage: homePageReducer,
   },
 })
 
