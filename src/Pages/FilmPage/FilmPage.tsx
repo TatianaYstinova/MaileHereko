@@ -6,7 +6,7 @@ import Button from "@mui/material/Button";
 
 import { TOKEN } from "../../shared/kp-client";
 import { FilmCard } from "../../components/FilmCard";
-import { getAllMoviesFilter, getMovieById } from "../../entities/movie";
+import {  getMovieById } from "../../entities/movie";
 import {
   getFavorites,
   addToFavorites,
@@ -28,6 +28,7 @@ import CardElement from "../../components/CardElement/CardElement";
 import Skeleton from "@mui/material/Skeleton";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { filmPageActions } from "./FilmPageSlice";
+import { getMoviesByFilter } from "../../entities/movie/api";
 
 export const FilmPage = () => {
   const { id } = useParams();
@@ -125,7 +126,7 @@ export const FilmPage = () => {
         (similarMovies) => similarMovies.similarMovieId
       );
       return similarMovieIds && similarMovieIds.length
-        ? await getAllMoviesFilter({ id: similarMovieIds })
+        ? await getMoviesByFilter({ id: similarMovieIds })
         : null;
     },
     {
