@@ -1,7 +1,7 @@
 import FormControl from "@mui/material/FormControl";
 import Icon from "@mui/material/Icon";
 import Input from "@mui/material/Input";
-import { useForm, Controller, SubmitHandler } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 
 import EmailIcon from "@mui/icons-material/Email";
 import KeyIcon from "@mui/icons-material/Key";
@@ -12,6 +12,7 @@ import { useState } from "react";
 import * as yup from "yup";
 import "./EmailAndPasswordComponent.scss";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useNavigate } from "react-router";
 
 const schema = yup.object().shape({
   email: yup
@@ -33,6 +34,7 @@ interface FormInput {
 export function EmailAndPasswordComponent() {
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword((show: any) => !show);
+  const navigate = useNavigate();
 
   const {
     control,
@@ -45,8 +47,13 @@ export function EmailAndPasswordComponent() {
       password: "",
     },
   });
-  const onSubmit: SubmitHandler<FormInput> = (data) => {
+
+  const onSubmit = (data: FormInput) => {
     console.log(data);
+  };
+
+  const goToRegistration = () => {
+    navigate("/registration"); // Переход на страницу регистрации
   };
 
   return (
@@ -109,7 +116,13 @@ export function EmailAndPasswordComponent() {
         <button type="submit" className="button-inlet">
           Вход
         </button>
-        <button className="button-check-in">Регистрация</button>
+        <button
+          type="button"
+          className="button-check-in"
+          onClick={goToRegistration}
+        >
+          Регистрация
+        </button>
       </div>
     </form>
   );

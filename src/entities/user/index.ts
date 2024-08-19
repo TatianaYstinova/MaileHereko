@@ -1,0 +1,1 @@
+export { registration } from './api';
