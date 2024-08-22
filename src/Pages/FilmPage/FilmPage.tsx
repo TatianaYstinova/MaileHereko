@@ -6,7 +6,7 @@ import Button from "@mui/material/Button";
 
 import { TOKEN } from "../../shared/kp-client";
 import { FilmCard } from "../../components/FilmCard";
-import { getAllMoviesFilter, getMovieById } from "../../entities/movie";
+import {  getMovieById } from "../../entities/movie";
 import {
   getFavorites,
   addToFavorites,
@@ -18,9 +18,7 @@ import Modal from "@mui/material/Modal/Modal";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import thankYou from "../../assets/thankyou.png";
-import {
-  getSimilarMovies
-} from "../../entities/moviesSelection";
+import { getSimilarMovies } from "../../entities/moviesSelection";
 
 import Link from "@mui/material/Link/Link";
 import { useParams } from "react-router";
@@ -28,6 +26,9 @@ import { useParams } from "react-router";
 import { AddSimilarMoviesModal } from "../../components/AddSimilarMoviesModal/AddSimilarMoviesModal";
 import CardElement from "../../components/CardElement/CardElement";
 import Skeleton from "@mui/material/Skeleton";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { filmPageActions } from "./FilmPageSlice";
+import { getMoviesByFilter } from "../../entities/movie/api";
 
 export const FilmPage = () => {
   const { id } = useParams();
@@ -37,31 +38,45 @@ export const FilmPage = () => {
     useState(false);
   const [isOpenModalSelectionMovies, setIsOpenModalSelectionMovies] =
     useState(false);
+  const dispatch = useAppDispatch();
 
-  // Запрос на получение фильма по ID
-  const {
-    data: movie,
-    isLoading: isLoadingMovie
-  } = useQuery(["movie", id], () => getMovieById(Number(id)), {
-    enabled: !!id,
-  });
+  //  данные из состояния Redux
+  const movie = useAppSelector((state) => state.filmPage.movie);
+  const favorites = useAppSelector((state) => state.filmPage.favorites);
+  const similarMovies = useAppSelector((state)=>state.filmPage.similarMovies)
 
-  // Запрос на получение избранных фильмов
-  const { data: favorites, isLoading: isLoadingFavorites } = useQuery(
-    ["favorites", userId],
-    () => getFavorites(userId)
+  const { isLoading: isLoadingMovie } = useQuery(
+    ["movie", id],
+    () => getMovieById(Number(id)),
+    {
+      enabled: !!id,
+      onSuccess: (data) => {
+        dispatch(filmPageActions.setMovie({ movie: data }));
+      },
+    }
   );
-  
-  const isInFavorites = favorites?.some(
-    ({ favoritedMovieId }) => favoritedMovieId === movie?.data?.id
-  ) || false;
+
+  const { isLoading: isLoadingFavorites } = useQuery(
+    ["favorites", userId],
+    () => getFavorites(userId),
+    {
+      onSuccess: (data) => {
+        dispatch(filmPageActions.setFavorites({ favoriteMovie: data }));
+      },
+    }
+  );
+
+  const isInFavorites =
+    favorites?.some(
+      ({ favoritedMovieId }) => favoritedMovieId === movie?.data?.id
+    ) || false;
 
   const favoriteMovie =
     favorites?.find(
       ({ favoritedMovieId }) => favoritedMovieId === movie?.data?.id
     ) || null;
 
-  // Мутация для добавления в избранное
+  
   const addFavoriteMutation = useMutation(addToFavorites, {
     onSuccess: () => {
       queryClient.invalidateQueries(["favorites", userId]);
@@ -69,7 +84,6 @@ export const FilmPage = () => {
     },
   });
 
-  // Мутация для удаления из избранного
   const deleteFavoriteMutation = useMutation(deleteFromFavoritesApi, {
     onSuccess: () => {
       queryClient.invalidateQueries(["favorites", userId]);
@@ -94,27 +108,29 @@ export const FilmPage = () => {
     }
   };
 
-  // Запрос на получение  похожих фильмов
-  const { data: similarMoviesData, refetch } = useQuery(
+  const {  refetch } = useQuery(
     "similarMoviesFromMyServer",
     () => getSimilarMovies(Number(movie?.data?.id)),
     {
       enabled: !!movie,
+      onSuccess:(data)=>{
+        dispatch(filmPageActions.setSimilarMovies({similarMovies:data}))
+      }
     }
   );
 
   const { data: similarFromKp } = useQuery(
-    ["similarMovies", similarMoviesData],
+    ["similarMovies", similarMovies],
     async () => {
-      const similarMovieIds = similarMoviesData?.map(
+      const similarMovieIds = similarMovies?.map(
         (similarMovies) => similarMovies.similarMovieId
       );
       return similarMovieIds && similarMovieIds.length
-        ? await getAllMoviesFilter({ id: similarMovieIds })
+        ? await getMoviesByFilter({ id: similarMovieIds })
         : null;
     },
     {
-      enabled: !!similarMoviesData,
+      enabled: !!similarMovies,
     }
   );
 
@@ -122,7 +138,7 @@ export const FilmPage = () => {
   const isMovieIdValid = typeof movieId === "number";
 
   if (isLoadingMovie) {
-    return <div className="download">Загрузка...</div>; // Индикатор загрузки
+    return <div className="download">Загрузка...</div>; 
   }
 
   return (
@@ -131,7 +147,7 @@ export const FilmPage = () => {
         <div className="img-poster">
           <img
             className="poster-header"
-            src={movie?.data?.poster?.url || 'Нет постера'}
+            src={movie?.data?.poster?.url || "Нет постера"}
             alt="poster"
           />
         </div>
@@ -143,18 +159,19 @@ export const FilmPage = () => {
       <div className="filmCard-container">
         {movie?.data && <FilmCard {...movie?.data} />}
         <div className="button-container">
-        {addFavoriteMutation.isLoading || deleteFavoriteMutation.isLoading || isLoadingFavorites ?
-        (
-          <Skeleton variant="rectangular" width={210} height={50} />
-        ) :(
-          <Button
-            className="film-button"
-            variant="contained"
-            onClick={handleToggleFavorite}
-          >
-            {isInFavorites ? "Удалить из избранного" : "Добавить в избранное"}
-          </Button>
-        )}
+          {addFavoriteMutation.isLoading ||
+          deleteFavoriteMutation.isLoading ||
+          isLoadingFavorites ? (
+            <Skeleton variant="rectangular" width={210} height={50} />
+          ) : (
+            <Button
+              className="film-button"
+              variant="contained"
+              onClick={handleToggleFavorite}
+            >
+              {isInFavorites ? "Удалить из избранного" : "Добавить в избранное"}
+            </Button>
+          )}
           <Modal
             open={isOpenModalFavoriteMovie}
             onClose={() => setIsOpenModalFavoriteMovie(false)}

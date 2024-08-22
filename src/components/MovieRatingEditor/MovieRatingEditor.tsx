@@ -11,7 +11,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import React from "react";
 import { TOKEN } from "../../shared/kp-client";
-
+import { DeletingAnAssessment } from "../../entities/estimates/api/delete";
 
 interface MovieRatingEditorProps {
   movieId: number;
@@ -27,16 +27,17 @@ export const MovieRatingEditor: React.FC<MovieRatingEditorProps> = ({
   const userId = TOKEN;
 
   // Загрузка оценок фильма
-  const { data: scores } = useQuery<FilmScore[]>(
-    ["filmScores", movieId],
-    () => getFilmScores(userId)
+  const { data: scores } = useQuery<FilmScore[]>(["filmScores", movieId], () =>
+    getFilmScores(userId)
   );
 
   // useEffect для установки значения рейтинга из загруженных оценок
   useEffect(() => {
     if (scores) {
-      const existingScore = scores.find((score) =>score.movieId === movieId && score.userId === userId);
-      console.log({scores})
+      const existingScore = scores.find(
+        (score) => score.movieId === movieId && score.userId === userId
+      );
+
       if (existingScore) {
         setRatingValue(existingScore.grade);
       } else {
@@ -44,7 +45,6 @@ export const MovieRatingEditor: React.FC<MovieRatingEditorProps> = ({
       }
     }
   }, [scores, userId, movieId]);
-  
 
   // Мутация для добавления новой оценки
   const addMutation = useMutation(addFilmScores, {
@@ -59,6 +59,13 @@ export const MovieRatingEditor: React.FC<MovieRatingEditorProps> = ({
       queryClient.invalidateQueries(["filmScores", movieId]);
     },
   });
+
+  const deleteMutation = useMutation(DeletingAnAssessment,{
+    onSuccess:()=>{
+      queryClient.invalidateQueries(["filmScores",movieId])
+
+    }
+  })
 
   // Функции для управления Popover
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -75,23 +82,23 @@ export const MovieRatingEditor: React.FC<MovieRatingEditorProps> = ({
     _event: React.SyntheticEvent<Element, Event>,
     value: number | null
   ) => {
-    if(value === ratingValue){
-      setRatingValue(null);
-    }else{
-      setRatingValue(Number(value));
-      
-      const existingScore = scores?.find((score) => score.movieId === movieId);
+    const existingScore = scores?.find((score) => score.movieId === movieId);
 
-      if (existingScore) {
+    if (existingScore) {
+      if (value === null) {
+        deleteMutation.mutate({
+          id: existingScore.id,
+        })
+      } else {
         updateMutation.mutate({
           id: existingScore.id,
           userId: userId,
           movieId: movieId,
           grade: Number(value),
         });
-      } else {
-        addMutation.mutate({ userId, movieId, grade: Number(value) });
       }
+    } else {
+      addMutation.mutate({ userId, movieId, grade: Number(value) });
     }
     handleClose();
   };
@@ -101,15 +108,12 @@ export const MovieRatingEditor: React.FC<MovieRatingEditorProps> = ({
 
   const getCircleColor = () => {
     if (ratingValue !== null) {
-      if (ratingValue >= 1 && ratingValue <= 4) return 'low-rating';
-      if (ratingValue >= 5 && ratingValue <= 8) return 'medium-rating';
-      if (ratingValue >= 9 && ratingValue <= 10) return 'high-rating';
-  
+      if (ratingValue >= 1 && ratingValue <= 4) return "low-rating";
+      if (ratingValue >= 5 && ratingValue <= 8) return "medium-rating";
+      if (ratingValue >= 9 && ratingValue <= 10) return "high-rating";
     }
-    return 'transparent';
+    return "transparent";
   };
-
- 
 
   return (
     <>
@@ -119,7 +123,9 @@ export const MovieRatingEditor: React.FC<MovieRatingEditorProps> = ({
         style={{ position: "relative" }}
       >
         {ratingValue !== null ? (
-          <span className={`viewer-rating ${getCircleColor()}`}>{ratingValue}</span>
+          <span className={`viewer-rating ${getCircleColor()}`}>
+            {ratingValue}
+          </span>
         ) : null}
         <img src={Star} alt="star" />
       </Button>

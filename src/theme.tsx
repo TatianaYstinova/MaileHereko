@@ -32,55 +32,68 @@ const theme = createTheme({
     },
     MuiLink: {
       defaultProps: {
-        color: '#ffffff',
-      }
+        color: "#ffffff",
+      },
     },
     MuiButtonBase: {
       styleOverrides: {
         root: {
           border: "2px solid #7B6EF6",
           fontFamily: "Poppins, sans-serif",
-          borderRadius: '12px', 
-          color: 'white',
+          borderRadius: "12px",
+          color: "white",
           fontWeight: 400,
-          fontSize: '16px',
-          lineHight: '24px',
-          backgroundColor: '#7B6EF6',
-          padding: '16px 32px',
-          '&:hover': {
-            border: '2px solid #5A4AF4',
+          fontSize: "16px",
+          lineHight: "24px",
+          backgroundColor: "#7B6EF6",
+          padding: "16px 32px",
+          "&:hover": {
+            border: "2px solid #5A4AF4",
           },
         },
       },
     },
-    MuiTextField :{
-      styleOverrides:{
-        root:{
-          width:"100%",
-          display:"flex",
-          border:"1px solid #ffffff",
-          
-        }
-      }
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          width: "100%",
+          display: "flex",
+          border: "1px solid #ffffff",
+        },
+      },
     },
-    MuiFormControlLabel :{
-      styleOverrides:{
-        root:{
-          padding:"16px"
-        }
-      }
+    MuiFormControlLabel: {
+      styleOverrides: {
+        root: {
+          padding: "16px",
+        },
+      },
     },
-    MuiGrid:{
-      styleOverrides:{
-        root:{
+    MuiGrid: {
+      styleOverrides: {
+        root: {
           justifyContent: "center",
           maxWidth: "1200px",
           margin: "auto",
           position: "relative",
           alignItems: "center",
-        }
-      }
-    }
+        },
+      },
+    },
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+          color: "#ffffff",
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          color: "#ffffff",
+        },
+      },
+    },
   },
 });
 

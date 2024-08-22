@@ -1,1 +1,1 @@
-export {getMovieById,getAllMovies,getAllMoviesFilter} from './api'
+export { getMovieById, getMoviesByFilter } from './api';

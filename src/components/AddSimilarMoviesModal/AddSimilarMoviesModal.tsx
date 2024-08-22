@@ -3,14 +3,13 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { MovieDocsResponseDtoV13 } from "@openmoviedb/kinopoiskdev_client";
+
 import { useState } from "react";
-import { getAllMoviesFilter } from "../../entities/movie";
+import { getMoviesByFilter } from '../../entities/movie/api';
 import Button from "@mui/material/Button";
 import { addToSimilarMovies } from "../../entities/moviesSelection/api";
 import {
-  MoviesSelection,
-  getSimilarMovies,
+  SimiralMovie,
 } from "../../entities/moviesSelection";
 import {
   QueryObserverResult,
@@ -18,7 +17,7 @@ import {
   RefetchQueryFilters,
   useMutation,
   useQuery,
-  useQueryClient,
+  
 } from "react-query";
 
 interface AddSimilarMoviesModalProps {
@@ -27,7 +26,7 @@ interface AddSimilarMoviesModalProps {
   movieId: number;
   refetch: <TPageData>(
     options?: (RefetchOptions & RefetchQueryFilters<TPageData>) | undefined
-  ) => Promise<QueryObserverResult<MoviesSelection[], unknown>>;
+  ) => Promise<QueryObserverResult<SimiralMovie[], unknown>>;
 }
 
 export function AddSimilarMoviesModal({
@@ -59,7 +58,7 @@ export function AddSimilarMoviesModal({
     }
   };
   const { data } = useQuery(["filmsBySearchWord", searchWord], () =>
-    getAllMoviesFilter({ name: searchWord })
+    getMoviesByFilter({ name: searchWord })
   );
 
   const handleChange = async (_: any, value: string) => {
