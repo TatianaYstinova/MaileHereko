@@ -1,1 +1,1 @@
-export { registration } from './api';
+export { registration ,getUsers} from './api';

@@ -87,6 +87,13 @@ const theme = createTheme({
         },
       },
     },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          color: "#ffffff",
+        },
+      },
+    },
   },
 });
 
