@@ -22,6 +22,7 @@ export const HomePage = () => {
   const movies = useAppSelector((state) => state.homePage.movies);
   const filter = useAppSelector((state) => state.homePage.filter);
   const dispatch = useAppDispatch();
+  console.log({Movies:movies})
 
   useEffect(() => {
     getMoviesByFilterHandler();
@@ -40,15 +41,15 @@ export const HomePage = () => {
       dispatch(homePageActions.setMoviesData(newMoviesData));
 
       if (filter.page === 1) {
-        dispatch(homePageActions.setMovies(response.data.docs)); // Первоначальная загрузка
+        dispatch(homePageActions.setMovies(response.data.docs)); 
       } else {
-        dispatch(homePageActions.addMovies(response.data.docs)); // Добавляем новые фильмы
+        dispatch(homePageActions.addMovies(response.data.docs)); 
       }
     }
   };
 
   const handleShowMore = () => {
-    // Увеличиваем страницу фильтра
+   
     const newFilter = {
       ...filter,
       page: Number(filter.page) + 1,

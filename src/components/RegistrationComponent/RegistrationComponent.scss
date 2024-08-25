@@ -1,3 +1,8 @@
+.registration-form-container {
+  display: flex;
+  justify-content: center;
+}
+
 .form-control {
   display: flex;
   flex-direction: column;
@@ -5,6 +10,15 @@
   justify-content: center;
   height: 500px;
   gap: 35px;
+  position: relative;
+  top:50px;
+  width: 50%;
+  min-width: 300px;
+}
+
+.input-field {
+  position: relative;
+  width: 100%;
 }
 
 button {

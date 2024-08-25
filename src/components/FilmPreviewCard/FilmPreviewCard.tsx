@@ -1,13 +1,5 @@
-import {
-  Box,
-  Card,
-  CardContent,
-  CardMedia,
-  CircularProgress,
-  Typography,
-} from "@mui/material";
+import { Box, Card, CardContent, CardMedia, Typography } from "@mui/material";
 import theme from "../../theme";
-import { useEffect, useState } from "react";
 import { MovieRatingEditor } from "../MovieRatingEditor/MovieRatingEditor";
 
 /* 
@@ -23,22 +15,9 @@ export type FilmPreviewCardProps = {
   movieId: number;
 };
 export const FilmPreviewCard = (props: FilmPreviewCardProps) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [imageUrl] = useState(props.img ? props.img : props.alternativeName);
+  const imageUrl = props.img ? props.img : props.alternativeName;
 
-  useEffect(() => {
-    const img = new Image();
-    img.src = imageUrl;
-    img.onload = () => {
-      setIsLoading(false);
-    };
-
-    img.onerror = () => setIsLoading(false);
-  }, [imageUrl]);
-
-  return isLoading ? (
-    <CircularProgress />
-  ) : (
+  return (
     <Card
       sx={{
         maxWidth: 284,
@@ -73,7 +52,6 @@ export const FilmPreviewCard = (props: FilmPreviewCardProps) => {
         image={imageUrl}
         alt="Image description"
         sx={{ borderRadius: "8px" }}
-        style={{ display: isLoading ? "block" : "block" }}
       />
       <CardContent sx={{ paddingTop: 2 }} style={{ paddingBottom: 8 }}>
         <Typography
