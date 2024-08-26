@@ -4,7 +4,7 @@ import { Navbar } from "./components/Navbar";
 import { FilmPage } from "./Pages/FilmPage";
 import LoginPage from "./Pages/LoginPage/LoginPage";
 import { HomePage } from "./Pages/HomePage/HomePage";
-
+import { RegistrationComponent } from "./components/RegistrationComponent/RegistrationComponent";
 
 function App() {
   const location = useLocation();
@@ -13,6 +13,7 @@ function App() {
       {location.pathname !== "/sing-in" && <Navbar />}
       <Routes>
         <Route path="sing-in" element={<LoginPage />} />
+        <Route path="/registration" element={<RegistrationComponent />} />
         <Route path="movie/:id" element={<FilmPage />} />
         <Route path="home" element={<HomePage />} />
         <Route path="/" element={<Navigate replace to="home" />} />

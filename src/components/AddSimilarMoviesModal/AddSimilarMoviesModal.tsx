@@ -4,12 +4,10 @@ import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
-import { getAllMoviesFilter } from "../../entities/movie";
+import { getMoviesByFilter } from "../../entities/movie/api";
 import Button from "@mui/material/Button";
 import { addToSimilarMovies } from "../../entities/moviesSelection/api";
-import {
-  MoviesSelection,
-} from "../../entities/moviesSelection";
+import { SimiralMovie } from "../../entities/moviesSelection";
 import {
   QueryObserverResult,
   RefetchOptions,
@@ -17,7 +15,7 @@ import {
   useMutation,
   useQuery,
 } from "react-query";
-import './AddSimilarMoviesModal.scss';
+import "./AddSimilarMoviesModal.scss";
 
 interface AddSimilarMoviesModalProps {
   isOpenModalSelectionMovies: boolean;
@@ -25,7 +23,7 @@ interface AddSimilarMoviesModalProps {
   movieId: number;
   refetch: <TPageData>(
     options?: (RefetchOptions & RefetchQueryFilters<TPageData>) | undefined
-  ) => Promise<QueryObserverResult<MoviesSelection[], unknown>>;
+  ) => Promise<QueryObserverResult<SimiralMovie[], unknown>>;
 }
 
 export function AddSimilarMoviesModal({
@@ -40,10 +38,9 @@ export function AddSimilarMoviesModal({
   } | null>(null);
 
   const [searchWord, setSearchWord] = useState("");
-  
 
   const addMovieMutation = useMutation(addToSimilarMovies, {
-    onSuccess:  () => {
+    onSuccess: () => {
       refetch();
       handleCloseModalSelectionMovies();
     },
@@ -57,7 +54,7 @@ export function AddSimilarMoviesModal({
     }
   };
   const { data } = useQuery(["filmsBySearchWord", searchWord], () =>
-    getAllMoviesFilter({ name: searchWord })
+    getMoviesByFilter({ name: searchWord })
   );
 
   const handleChange = async (_: any, value: string) => {
@@ -73,10 +70,9 @@ export function AddSimilarMoviesModal({
     >
       <Box className="modal-style-box">
         <Typography id="modal-modal-title">Введите название фильма:</Typography>
-        <Typography
-          id="modal-modal-description"
-        >
-          <Autocomplete className="picture-modal-title"
+        <Typography id="modal-modal-description">
+          <Autocomplete
+            className="picture-modal-title"
             value={value}
             onChange={(_, newValue) => setValue(newValue)}
             disablePortal
@@ -88,11 +84,7 @@ export function AddSimilarMoviesModal({
             renderInput={(params) => <TextField {...params} label="Movie" />}
           />
         </Typography>
-        <Button
-          onClick={handleAddMovie}
-        >
-          Выбрать
-        </Button>
+        <Button onClick={handleAddMovie}>Выбрать</Button>
       </Box>
     </Modal>
   );
