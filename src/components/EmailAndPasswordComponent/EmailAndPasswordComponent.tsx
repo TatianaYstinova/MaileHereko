@@ -7,13 +7,16 @@ import EmailIcon from "@mui/icons-material/Email";
 import KeyIcon from "@mui/icons-material/Key";
 import IconButton from "@mui/material/IconButton/IconButton";
 import { VisibilityOff, Visibility } from "@mui/icons-material";
-import {  FormHelperText, InputAdornment } from "@mui/material";
+import { Button, FormHelperText, InputAdornment } from "@mui/material";
 import { useEffect, useState } from "react";
 import * as yup from "yup";
 import "./EmailAndPasswordComponent.scss";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router";
-import { getUsers } from "../../entities/user";
+import { authorize } from "../../entities/user";
+import { AuthorisationData } from "../../entities/user/api";
+import { appActions } from "../../store";
+import { useDispatch } from "react-redux";
 
 const schema = yup.object().shape({
   email: yup
@@ -27,124 +30,114 @@ const schema = yup.object().shape({
     .required("Нужно заполнить поле пароля"),
 });
 
-interface FormInput {
-  email: string;
-  password: string;
-}
-
 export function EmailAndPasswordComponent() {
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword((show: any) => !show);
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm({
+  } = useForm<AuthorisationData>({
     resolver: yupResolver(schema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
-  useEffect(() => {
-    const user = localStorage.getItem("user");
-    if (user) {
-      setIsLoggedIn(true);
-    }
-  }, []);
 
-  const onSubmit = async (data: FormInput) => {
+  const dispatch = useDispatch();
+
+  const onSubmit = async (data: AuthorisationData) => {
     try {
-      const users = await getUsers(data.email, data.password);
-      if (users) {
-        localStorage.setItem("user", JSON.stringify(users));
-        setIsLoggedIn(true);
-        navigate("/");
-      } else {
-        alert("Неверный email или пароль");
-      }
+      const { accessToken, refreshToken } = await authorize({
+        email: data.email,
+        password: data.password,
+      });
+
+      localStorage.setItem("accessToken", JSON.stringify(accessToken));
+      localStorage.setItem("refreshToken", JSON.stringify(refreshToken));
+
+      dispatch(appActions.setIsAuthorized({ isAuthorized: true }));
+      navigate("/");
     } catch (error) {
       alert("Произошла ошибка. Пожалуйста, попробуйте позже.");
     }
   };
 
-
-
   const goToRegistration = () => {
-    navigate("/registration"); // Переход на страницу регистрации
+    navigate("/registration");
   };
 
   return (
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <FormControl variant="standard" error={!!errors.email}>
-            <Controller
-              name="email"
-              control={control}
-              render={({ field }) => (
-                <>
-                  <Input
-                    {...field}
-                    placeholder="Email"
-                    startAdornment={
-                      <InputAdornment position="start">
-                        <Icon>
-                          <EmailIcon />
-                        </Icon>
-                      </InputAdornment>
-                    }
-                    className="email-input"
-                  />
-                  <FormHelperText>{errors.email?.message}</FormHelperText>
-                </>
-              )}
-            />
-          </FormControl>
-          <FormControl variant="standard" error={!!errors.password}>
-            <Controller
-              name="password"
-              control={control}
-              render={({ field }) => (
-                <>
-                  <Input
-                    {...field}
-                    placeholder="Password"
-                    type={showPassword ? "text" : "password"}
-                    startAdornment={
-                      <InputAdornment position="start">
-                        <Icon>
-                          <KeyIcon />
-                        </Icon>
-                      </InputAdornment>
-                    }
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton onClick={handleClickShowPassword}>
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    }
-                    className="password-input"
-                  />
-                  <FormHelperText>{errors.password?.message}</FormHelperText>
-                </>
-              )}
-            />
-          </FormControl>
-          <div className="button-container-login">
-            <button type="submit" className="button-inlet">
-              Вход
-            </button>
-            <button
-              type="button"
-              className="button-check-in"
-              onClick={goToRegistration}
-            >
-              Регистрация
-            </button>
-          </div>
-        </form>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <FormControl variant="standard" error={!!errors.email}>
+        <Controller
+          name="email"
+          control={control}
+          render={({ field }) => (
+            <>
+              <Input
+                {...field}
+                placeholder="Email"
+                startAdornment={
+                  <InputAdornment position="start">
+                    <Icon>
+                      <EmailIcon />
+                    </Icon>
+                  </InputAdornment>
+                }
+                className="email-input"
+              />
+              <FormHelperText>{errors.email?.message}</FormHelperText>
+            </>
+          )}
+        />
+      </FormControl>
+      <FormControl variant="standard" error={!!errors.password}>
+        <Controller
+          name="password"
+          control={control}
+          render={({ field }) => (
+            <>
+              <Input
+                {...field}
+                placeholder="Password"
+                type={showPassword ? "text" : "password"}
+                startAdornment={
+                  <InputAdornment position="start">
+                    <Icon>
+                      <KeyIcon />
+                    </Icon>
+                  </InputAdornment>
+                }
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton onClick={handleClickShowPassword}>
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+                className="password-input"
+              />
+              <FormHelperText>{errors.password?.message}</FormHelperText>
+            </>
+          )}
+        />
+      </FormControl>
+      <div className="button-container-login">
+        <Button type="submit" className="button-inlet">
+          Вход
+        </Button>
+        <Button
+          type="button"
+          className="button-check-in"
+          onClick={goToRegistration}
+        >
+          Регистрация
+        </Button>
+      </div>
+    </form>
   );
 }

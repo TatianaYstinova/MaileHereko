@@ -2,11 +2,6 @@ import { Box, Card, CardContent, CardMedia, Typography } from "@mui/material";
 import theme from "../../theme";
 import { MovieRatingEditor } from "../MovieRatingEditor/MovieRatingEditor";
 
-/* 
-компонент карточки фильма
-с названием и картинкой,
-без дополнительной информации
-*/
 export type FilmPreviewCardProps = {
   name: string | undefined;
   alternativeName: string;

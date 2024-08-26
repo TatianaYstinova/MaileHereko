@@ -12,6 +12,8 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import React from "react";
 import { TOKEN } from "../../shared/kp-client";
 import { DeletingAnAssessment } from "../../entities/estimates/api/delete";
+import { useSelector } from "react-redux";
+import { isUathorizedSelector } from "../../store";
 
 interface MovieRatingEditorProps {
   movieId: number;
@@ -26,12 +28,11 @@ export const MovieRatingEditor: React.FC<MovieRatingEditorProps> = ({
 
   const userId = TOKEN;
 
-  // Загрузка оценок фильма
+ 
   const { data: scores } = useQuery<FilmScore[]>(["filmScores", movieId], () =>
     getFilmScores(userId)
   );
 
-  // useEffect для установки значения рейтинга из загруженных оценок
   useEffect(() => {
     if (scores) {
       const existingScore = scores.find(
@@ -46,28 +47,27 @@ export const MovieRatingEditor: React.FC<MovieRatingEditorProps> = ({
     }
   }, [scores, userId, movieId]);
 
-  // Мутация для добавления новой оценки
+  
   const addMutation = useMutation(addFilmScores, {
     onSuccess: () => {
       queryClient.invalidateQueries(["filmScores", movieId]);
     },
   });
 
-  // Мутация для обновления существующей оценки
+ 
   const updateMutation = useMutation(EvaluationUpdate, {
     onSuccess: () => {
       queryClient.invalidateQueries(["filmScores", movieId]);
     },
   });
 
-  const deleteMutation = useMutation(DeletingAnAssessment,{
-    onSuccess:()=>{
-      queryClient.invalidateQueries(["filmScores",movieId])
+  const deleteMutation = useMutation(DeletingAnAssessment, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(["filmScores", movieId]);
+    },
+  });
 
-    }
-  })
-
-  // Функции для управления Popover
+  
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     event.preventDefault();
     event.stopPropagation();
@@ -88,7 +88,7 @@ export const MovieRatingEditor: React.FC<MovieRatingEditorProps> = ({
       if (value === null) {
         deleteMutation.mutate({
           id: existingScore.id,
-        })
+        });
       } else {
         updateMutation.mutate({
           id: existingScore.id,
@@ -115,6 +115,8 @@ export const MovieRatingEditor: React.FC<MovieRatingEditorProps> = ({
     return "transparent";
   };
 
+  const isAuthorized = useSelector(isUathorizedSelector);
+
   return (
     <>
       <Button
@@ -129,33 +131,35 @@ export const MovieRatingEditor: React.FC<MovieRatingEditorProps> = ({
         ) : null}
         <img src={Star} alt="star" />
       </Button>
-      <Popover
-        className="popover-star"
-        id={openModal}
-        open={open}
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        sx={{ width: "700px", height: "150px", left: "0" }}
-      >
-        {" "}
-        <Rating
-          name="size-medium"
-          max={10}
-          onChange={handleRatingChange}
-          onClick={(event) => {
-            event.stopPropagation();
+      {isAuthorized && (
+        <Popover
+          className="popover-star"
+          id={openModal}
+          open={open}
+          anchorEl={anchorEl}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "right",
           }}
-          defaultValue={ratingValue || 0}
-        />
-      </Popover>
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+          sx={{ width: "700px", height: "150px", left: "0" }}
+        >
+          {" "}
+          <Rating
+            name="size-medium"
+            max={10}
+            onChange={handleRatingChange}
+            onClick={(event) => {
+              event.stopPropagation();
+            }}
+            defaultValue={ratingValue || 0}
+          />
+        </Popover>
+      )}
     </>
   );
 };

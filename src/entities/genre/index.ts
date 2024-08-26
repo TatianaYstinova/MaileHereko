@@ -1,0 +1,1 @@
+export { useGenres } from './get-geres';

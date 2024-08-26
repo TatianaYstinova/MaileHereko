@@ -127,7 +127,7 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
     setRatingKp([1, 10]);
     setRatingIMDb([1, 10]);
     setSearchWord("");
-    setSelectedFilterLabel(null); // Очистить метку фильтра
+    setSelectedFilterLabel(null); 
   };
 
   const open = Boolean(anchorEl);

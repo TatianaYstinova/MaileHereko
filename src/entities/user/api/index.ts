@@ -1,3 +1,4 @@
 export { registration } from './registration';
-export { getUsers } from './authorisation';
+export { authorize } from './authorize';
 export type { RegistrationData } from './registration'
+export type { AuthorizationData as AuthorisationData } from './authorize'
