@@ -1,6 +1,6 @@
 import { Button, Popover, Rating } from "@mui/material";
 import Star from "../../assets/star.svg";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "./MovieRatingEditor.scss";
 import {
   FilmScore,
@@ -8,7 +8,7 @@ import {
   addFilmScores,
   EvaluationUpdate,
 } from "../../entities/estimates/index";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import React from "react";
 import { TOKEN } from "../../shared/kp-client";
 import { DeletingAnAssessment } from "../../entities/estimates/api/delete";
@@ -22,14 +22,12 @@ interface MovieRatingEditorProps {
 export const MovieRatingEditor: React.FC<MovieRatingEditorProps> = ({
   movieId,
 }) => {
-  const queryClient = useQueryClient();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [ratingValue, setRatingValue] = useState<number | null>(null);
 
   const userId = TOKEN;
 
- 
-  const { data: scores } = useQuery<FilmScore[]>(["filmScores", movieId], () =>
+  const { data: scores, refetch } = useQuery<FilmScore[]>(["filmScores"], () =>
     getFilmScores(userId)
   );
 
@@ -47,27 +45,24 @@ export const MovieRatingEditor: React.FC<MovieRatingEditorProps> = ({
     }
   }, [scores, userId, movieId]);
 
-  
   const addMutation = useMutation(addFilmScores, {
     onSuccess: () => {
-      queryClient.invalidateQueries(["filmScores", movieId]);
+      refetch();
     },
   });
 
- 
   const updateMutation = useMutation(EvaluationUpdate, {
     onSuccess: () => {
-      queryClient.invalidateQueries(["filmScores", movieId]);
+      refetch();
     },
   });
 
   const deleteMutation = useMutation(DeletingAnAssessment, {
     onSuccess: () => {
-      queryClient.invalidateQueries(["filmScores", movieId]);
+      refetch();
     },
   });
 
-  
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     event.preventDefault();
     event.stopPropagation();

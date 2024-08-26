@@ -11,7 +11,11 @@ export const Navbar = () => {
 
   const handleLogout = () => {
     dispatch(appActions.setIsAuthorized({ isAuthorized: false }));
+
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
   };
+
   return (
     <div className="header-container">
       <img className="logo" src={logo} alt="picture logo" />
@@ -25,7 +29,9 @@ export const Navbar = () => {
         <Link sx={{ color: "white" }} href="/sign-in" underline="hover">
           Вход
         </Link>
-        <Link sx={{ color: "white" }} href="/sign-in"
+        <Link
+          sx={{ color: "white" }}
+          href="/sign-in"
           underline="hover"
           onClick={handleLogout}
         >
