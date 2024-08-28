@@ -23,7 +23,7 @@ export const Navbar = () => {
         <Link sx={{ color: "white" }} href="/" underline="hover">
           Главная
         </Link>
-        <Link sx={{ color: "white" }} href="/catalogue" underline="hover">
+        <Link sx={{ color: "white" }} href="/catalog" underline="hover">
           Каталог фильмов
         </Link>
         <Link sx={{ color: "white" }} href="/sign-in" underline="hover">

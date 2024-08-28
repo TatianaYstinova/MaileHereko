@@ -2,7 +2,8 @@ import { configureStore, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { filmPageReducer } from '../Pages/FilmPage/FilmPageSlice';
 import { homePageReducer } from '../Pages/HomePage/HomePageSlice';
 import { AppState, SetIsAuthorizedActionPayload } from './types';
-import { cataloguePageReducer } from '../Pages/CataloguePage/CataloguePageSlice';
+import { cataloguePageReducer } from '../Pages/CatalogPage/CatalogPageSlice';
+import { filmsByGenreReducer } from '../components/FilmByGenre';
 
 const initialState: AppState = {
   isAuthorized: false,
@@ -27,7 +28,8 @@ export const store = configureStore({
     app: appSlice.reducer,
     filmPage: filmPageReducer,
     homePage: homePageReducer,
-    catalogPage:cataloguePageReducer,
+    catalogPage: cataloguePageReducer,
+    filmsByGenre: filmsByGenreReducer
   },
 })
 

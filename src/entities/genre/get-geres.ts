@@ -1,7 +1,7 @@
 import { useQuery } from "react-query"
 import { getGenresApi } from "./api"
 import { useDispatch, useSelector } from "react-redux"
-import { cataloguePageActions, genreSelector } from "../../Pages/CataloguePage/CataloguePageSlice";
+import { cataloguePageActions, genreSelector } from "../../Pages/CatalogPage/CatalogPageSlice";
 
 export const useGenres = () => {
     const dispatch = useDispatch();

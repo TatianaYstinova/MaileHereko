@@ -5,10 +5,11 @@ import { FilmPage } from "./Pages/FilmPage";
 import LoginPage from "./Pages/LoginPage/LoginPage";
 import { HomePage } from "./Pages/HomePage/HomePage";
 import { RegistrationComponent } from "./components/RegistrationComponent/RegistrationComponent";
-import { CataloguePage } from "./Pages/CataloguePage/CataloguePage";
+import { CatalogPage } from "./Pages/CatalogPage/CataloguePage";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { appActions } from "./store";
+import { FilmByGenre } from "./components/FilmByGenre";
 
 function App() {
   const location = useLocation();
@@ -31,7 +32,8 @@ function App() {
         <Route path="/registration" element={<RegistrationComponent />} />
         <Route path="/movie/:id" element={<FilmPage />} />
         <Route path="/" element={<HomePage />} />
-        <Route path="/catalogue" element={<CataloguePage />} />
+        <Route path="/catalog" element={<CatalogPage />} />
+        <Route path="/film-by-genre" element={<FilmByGenre />} />
       </Routes>
     </>
   );
