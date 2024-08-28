@@ -1,6 +1,6 @@
 import { Button, Popover, Rating } from "@mui/material";
 import Star from "../../assets/star.svg";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./MovieRatingEditor.scss";
 import {
   FilmScore,
@@ -10,10 +10,12 @@ import {
 } from "../../entities/estimates/index";
 import { useMutation, useQuery } from "react-query";
 import React from "react";
-import { TOKEN } from "../../shared/kp-client";
+
 import { DeletingAnAssessment } from "../../entities/estimates/api/delete";
 import { useSelector } from "react-redux";
 import { isUathorizedSelector } from "../../store";
+import { jwtDecode } from "jwt-decode";
+import { USER_ID_KEY } from "../../entities/user";
 
 interface MovieRatingEditorProps {
   movieId: number;
@@ -24,8 +26,16 @@ export const MovieRatingEditor: React.FC<MovieRatingEditorProps> = ({
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [ratingValue, setRatingValue] = useState<number | null>(null);
+  const [userId, setUserId] = useState<string>("");
 
-  const userId = TOKEN;
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+
+    if (token) {
+      const decoded = jwtDecode<any>(token);
+      setUserId(decoded[USER_ID_KEY]);
+    }
+  }, [setUserId]);
 
   const { data: scores, refetch } = useQuery<FilmScore[]>(["filmScores"], () =>
     getFilmScores(userId)

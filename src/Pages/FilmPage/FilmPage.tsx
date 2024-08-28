@@ -1,10 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import "./FilmPage.scss";
 
 import Button from "@mui/material/Button";
 
-import { TOKEN } from "../../shared/kp-client";
 import { FilmCard } from "../../components/FilmCard";
 import { getMovieById } from "../../entities/movie";
 import {
@@ -31,11 +30,13 @@ import { filmPageActions } from "./FilmPageSlice";
 import { getMoviesByFilter } from "../../entities/movie/api";
 import { useSelector } from "react-redux";
 import { isUathorizedSelector } from "../../store";
+import { USER_ID_KEY } from "../../entities/user";
+import { jwtDecode } from "jwt-decode";
 
 export const FilmPage = () => {
   const { id } = useParams();
   const queryClient = useQueryClient();
-  const userId = TOKEN;
+  const [userId, setUserId] = useState<string>("");
   const [isOpenModalFavoriteMovie, setIsOpenModalFavoriteMovie] =
     useState(false);
   const [isOpenModalSelectionMovies, setIsOpenModalSelectionMovies] =
@@ -47,6 +48,15 @@ export const FilmPage = () => {
   const favorites = useAppSelector((state) => state.filmPage.favorites);
   const similarMovies = useAppSelector((state) => state.filmPage.similarMovies);
   const isAuthorized = useSelector(isUathorizedSelector);
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+
+    if (token) {
+      const decoded = jwtDecode<any>(token);
+      setUserId(decoded[USER_ID_KEY]);
+    }
+  }, [setUserId]);
 
   const { isLoading: isLoadingMovie } = useQuery(
     ["movie", id],
@@ -109,7 +119,7 @@ export const FilmPage = () => {
 
       if (favoritedMovieId !== undefined) {
         addFavoriteMutation.mutate({
-          userId: TOKEN,
+          userId,
           favoritedMovieId: favoritedMovieId,
         });
       }
