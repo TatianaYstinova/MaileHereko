@@ -1,0 +1,8 @@
+.films-by-genre {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); // 4 колонки
+    grid-gap: 16px; // промежуток между элементами
+    margin-bottom: 20px;
+    justify-content: center;
+    align-items: center;
+}

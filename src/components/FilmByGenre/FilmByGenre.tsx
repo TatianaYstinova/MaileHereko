@@ -5,6 +5,7 @@ import { Filter, MovieFields } from "@openmoviedb/kinopoiskdev_client";
 import { useInfiniteQuery } from "react-query";
 import { getMoviesByFilter } from "../../entities/movie";
 import { FilmPreviewCard } from "../FilmPreviewCard/FilmPreviewCard";
+import './FilmByGenre.scss'
 
 const api = ({
   pageParam,
@@ -29,10 +30,14 @@ export const FilmByGenre = () => {
       ...previousFilter,
       ["genres.name"]: genre ? [genre] : undefined,
     }));
-  }, [query.get("genre"), setFilter]);
+  }, [query, setFilter]);
 
-  const { data: filmsByGenre, fetchNextPage } = useInfiniteQuery(
-    ["filmsByGenre"],
+  const {
+    data: filmsByGenre,
+    fetchNextPage,
+    remove,
+  } = useInfiniteQuery(
+    ["filmsByGenre", filter],
     ({ pageParam }) => api({ filter, pageParam }),
     {
       getNextPageParam: (lastPage) => {
@@ -41,21 +46,32 @@ export const FilmByGenre = () => {
     }
   );
 
+  useEffect(
+    function () {
+      return function () {
+        remove();
+      };
+    },
+    [remove]
+  );
+
   return (
     <>
-      {filmsByGenre?.pages.map((page) =>
-        page.data?.docs.map(({ id, name, genres ,poster }) => (
-          <Link to={`/movie/${id}`}>
-          <FilmPreviewCard
-            name={name}
-            alternativeName={""}
-            grade={genres ? genres.length : 0}
-            img={poster?.url}
-            movieId={id}
-          />
-    </Link>
-        ))
-      )}
+      <div className="films-by-genre">
+        {filmsByGenre?.pages.map((page) =>
+          page.data?.docs.map(({ id, name, genres, poster }) => (
+            <Link to={`/movie/${id}`}>
+              <FilmPreviewCard
+                name={name}
+                alternativeName={""}
+                grade={genres ? genres.length : 0}
+                img={poster?.url}
+                movieId={id}
+              />
+            </Link>
+          ))
+        )}
+      </div>
       <Button onClick={() => fetchNextPage()}>Показать ещё</Button>
     </>
   );

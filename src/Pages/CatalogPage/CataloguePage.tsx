@@ -6,9 +6,9 @@ export const CatalogPage = () => {
   const { genres } = useGenres();
 
   return (
-    <div className="catalogue-page">
+    <div className="catalogue-page" >
       {genres.map((genre) => (
-        <CatalogCard genre={genre.name}  />
+      <CatalogCard genre={genre.name} />
       ))}
     </div>
   );
