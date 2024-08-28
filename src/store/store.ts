@@ -7,12 +7,16 @@ import { filmsByGenreReducer } from '../components/FilmByGenre';
 
 const initialState: AppState = {
   isAuthorized: false,
+  isAuthorizing: false
 };
 
 const appSlice = createSlice({
   name: 'app',
   initialState,
   reducers: {
+    setIsAuthorizing(state, action: PayloadAction<boolean>) {
+      state.isAuthorizing = action.payload;
+    },
     setIsAuthorized(state, action: PayloadAction<SetIsAuthorizedActionPayload>) {
       state.isAuthorized = action.payload.isAuthorized;
     }

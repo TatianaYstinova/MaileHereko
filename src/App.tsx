@@ -28,10 +28,10 @@ function App() {
     <>
       {!isLoginPage && <Navbar />}
       <Routes>
+        <Route path="/" element={<HomePage />} />
         <Route path="/sign-in" element={<LoginPage />} />
         <Route path="/registration" element={<RegistrationComponent />} />
         <Route path="/movie/:id" element={<FilmPage />} />
-        <Route path="/" element={<HomePage />} />
         <Route path="/catalog" element={<CatalogPage />} />
         <Route path="/film-by-genre" element={<FilmByGenre />} />
       </Routes>

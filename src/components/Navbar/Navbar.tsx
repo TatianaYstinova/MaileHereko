@@ -1,11 +1,11 @@
 import "../../Pages/HomePage/HomePage.scss";
 
-import Link from "@mui/material/Link";
 import logo from "../../assets/logoImg/Frame 82.png";
 import "./Navbar.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { appActions } from "../../store";
 import { isUathorizedSelector } from "../../store";
+import { Link } from "react-router-dom";
 
 export const Navbar = () => {
   const dispatch = useDispatch();
@@ -22,23 +22,18 @@ export const Navbar = () => {
     <div className="header-container">
       <img className="logo" src={logo} alt="picture logo" />
       <div className="menu-navigation">
-        <Link sx={{ color: "white" }} href="/" underline="hover">
+        <Link style={{ color: "white" }} to="/">
           Главная
         </Link>
-        <Link sx={{ color: "white" }} href="/catalog" underline="hover">
+        <Link style={{ color: "white" }} to="/catalog">
           Каталог фильмов
         </Link>
         {isAuthorized ? (
-          <Link
-            sx={{ color: "white" }}
-            href="/"
-            underline="hover"
-            onClick={handleLogout}
-          >
+          <Link style={{ color: "white" }} to="/" onClick={handleLogout}>
             Выход
           </Link>
         ) : (
-          <Link sx={{ color: "white" }} href="/sign-in" underline="hover">
+          <Link style={{ color: "white" }} to="/sign-in">
             Вход
           </Link>
         )}

@@ -7,8 +7,13 @@ import EmailIcon from "@mui/icons-material/Email";
 import KeyIcon from "@mui/icons-material/Key";
 import IconButton from "@mui/material/IconButton/IconButton";
 import { VisibilityOff, Visibility } from "@mui/icons-material";
-import { Button, FormHelperText, InputAdornment } from "@mui/material";
-import { useEffect, useState } from "react";
+import {
+  Button,
+  CircularProgress,
+  FormHelperText,
+  InputAdornment,
+} from "@mui/material";
+import { useState } from "react";
 import * as yup from "yup";
 import "./EmailAndPasswordComponent.scss";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -16,7 +21,8 @@ import { useNavigate } from "react-router";
 import { authorize } from "../../entities/user";
 import { AuthorisationData } from "../../entities/user/api";
 import { appActions } from "../../store";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../store/store";
 
 const schema = yup.object().shape({
   email: yup
@@ -50,6 +56,8 @@ export function EmailAndPasswordComponent() {
   const dispatch = useDispatch();
 
   const onSubmit = async (data: AuthorisationData) => {
+    dispatch(appActions.setIsAuthorizing(true));
+
     try {
       const { accessToken, refreshToken } = await authorize({
         email: data.email,
@@ -64,7 +72,13 @@ export function EmailAndPasswordComponent() {
     } catch (error) {
       alert("Произошла ошибка. Пожалуйста, попробуйте позже.");
     }
+
+    dispatch(appActions.setIsAuthorizing(false));
   };
+
+  const isAuthorizing = useSelector(
+    (state: RootState) => state.app.isAuthorizing
+  );
 
   const goToRegistration = () => {
     navigate("/registration");
@@ -89,6 +103,7 @@ export function EmailAndPasswordComponent() {
                   </InputAdornment>
                 }
                 className="email-input"
+                disabled={isAuthorizing}
               />
               <FormHelperText>{errors.email?.message}</FormHelperText>
             </>
@@ -120,6 +135,7 @@ export function EmailAndPasswordComponent() {
                   </InputAdornment>
                 }
                 className="password-input"
+                disabled={isAuthorizing}
               />
               <FormHelperText>{errors.password?.message}</FormHelperText>
             </>
@@ -127,13 +143,19 @@ export function EmailAndPasswordComponent() {
         />
       </FormControl>
       <div className="button-container-login">
-        <Button type="submit" className="button-inlet">
+        <Button
+          type="submit"
+          className="button-inlet"
+          disabled={isAuthorizing}
+          endIcon={isAuthorizing ? <CircularProgress size={15} /> : null}
+        >
           Вход
         </Button>
         <Button
           type="button"
           className="button-check-in"
           onClick={goToRegistration}
+          disabled={isAuthorizing}
         >
           Регистрация
         </Button>
