@@ -16,6 +16,7 @@ import {
   useQuery,
 } from "react-query";
 import "./AddSimilarMoviesModal.scss";
+import { buttomModalSimilarMovie } from "./style";
 
 interface AddSimilarMoviesModalProps {
   isOpenModalSelectionMovies: boolean;
@@ -84,7 +85,9 @@ export function AddSimilarMoviesModal({
             renderInput={(params) => <TextField {...params} label="Movie" />}
           />
         </Typography>
-        <Button onClick={handleAddMovie}>Выбрать</Button>
+        <Button onClick={handleAddMovie} sx={buttomModalSimilarMovie}>
+          Выбрать
+        </Button>
       </Box>
     </Modal>
   );

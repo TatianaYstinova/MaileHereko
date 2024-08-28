@@ -43,6 +43,7 @@ const theme = createTheme({
           fontFamily: "Poppins, sans-serif",
           borderRadius: "12px",
           fontWeight: 400,
+          color:"#FFFFFF",
           fontSize: "16px",
           lineHight: "24px",
           backgroundColor: "#7B6EF6",

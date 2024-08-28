@@ -125,7 +125,7 @@ export const SearchBox: React.FC<SearchBoxProps> = ({ setFilters }) => {
     setRatingKp([1, 10]);
     setRatingIMDb([1, 10]);
     setSearchWord("");
-    setSelectedFilterLabel(null); // Очистить метку фильтра
+    setSelectedFilterLabel(null); 
   };
 
   const open = Boolean(anchorEl);
@@ -133,7 +133,7 @@ export const SearchBox: React.FC<SearchBoxProps> = ({ setFilters }) => {
 
   return (
     <div className="search-box-container">
-      <Button
+      <Button 
         variant="outlined"
         onClick={handleClick}
         className="filter-button"

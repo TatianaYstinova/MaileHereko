@@ -5,6 +5,7 @@
 .search-box-container {
   position: relative;
   display: flex;
+  flex-direction: column;
 }
 .search-word {
   position: relative;
@@ -20,7 +21,7 @@
   color: rgb(238, 240, 243);
   border: 2px solid rgba(123, 110, 246, 1);
   top: 62px;
-  left: 140px;
+  
 }
 .search-box-button {
   width: 135px;
