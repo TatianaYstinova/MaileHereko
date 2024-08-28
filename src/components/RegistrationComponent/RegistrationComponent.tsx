@@ -3,12 +3,22 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { registration, RegistrationData } from "../../entities/user";
 import { useNavigate } from "react-router-dom";
-import { Button, FormControl, FormHelperText, Input } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  FormControl,
+  FormHelperText,
+  Input,
+  Modal,
+  Typography,
+} from "@mui/material";
 import "./RegistrationComponent.scss";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import dayjs, { Dayjs } from "dayjs";
+import { useState } from "react";
 
 const schema = yup.object().shape({
   name: yup.string().required("Имя обязательно"),
@@ -37,7 +47,7 @@ const schema = yup.object().shape({
 });
 
 export function RegistrationComponent() {
-  const navigation = useNavigate();
+  const navigate = useNavigate();
 
   const {
     control,
@@ -55,143 +65,216 @@ export function RegistrationComponent() {
     },
   });
 
+  const [succesModalOpened, setSuccesModalOpened] = useState(false);
+  const [registrationError, setRegistrationError] = useState(false);
+  const [registrating, setRegistrating] = useState(false);
+
   const onSubmit: SubmitHandler<RegistrationData> = async (data) => {
+    setRegistrationError(false);
+    setRegistrating(true);
+
     try {
       await registration(data);
-      navigation("/");
+
+      setSuccesModalOpened(true);
     } catch (error) {
       console.error("Ошибка при регистрации:", error);
+      setSuccesModalOpened(true);
+      setRegistrationError(true);
     }
+
+    setRegistrating(false);
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="registration-form-container">
-      <div className="form-control">
-        <>
-          <FormControl
-            variant="standard"
-            error={!!errors.name}
-            className="input-field"
-          >
-            <Controller
-              name="name"
-              control={control}
-              render={({ field }) => (
-                <>
-                  <Input {...field} placeholder="Имя" />
-                  <FormHelperText>{errors.name?.message}</FormHelperText>
-                </>
-              )}
-            />
-          </FormControl>
-
-          <FormControl
-            variant="standard"
-            error={!!errors.email}
-            className="input-field"
-          >
-            <Controller
-              name="email"
-              control={control}
-              render={({ field }) => (
-                <>
-                  <Input {...field} placeholder="Почта" />
-                  <FormHelperText>{errors.email?.message}</FormHelperText>
-                  <FormHelperText>
-                    Длина почты не больше 30 символов
-                  </FormHelperText>
-                </>
-              )}
-            />
-          </FormControl>
-          <FormControl
-            variant="standard"
-            error={!!errors.password}
-            className="input-field"
-          >
-            <Controller
-              name="password"
-              control={control}
-              render={({ field }) => (
-                <>
-                  <Input {...field} placeholder="Пароль" />
-                  <FormHelperText>{errors.password?.message}</FormHelperText>
-                  <FormHelperText>
-                    Пароль должен содержать не менее 8 символов, включать
-                    латинские буквы, цифры и специальный символ.
-                  </FormHelperText>
-                </>
-              )}
-            />
-          </FormControl>
-          <FormControl
-            variant="standard"
-            error={!!errors.address}
-            className="input-field"
-          >
-            <Controller
-              name="address"
-              control={control}
-              render={({ field }) => (
-                <>
-                  <Input {...field} placeholder="Адрес" />
-                  <FormHelperText>{errors.address?.message}</FormHelperText>
-                </>
-              )}
-            />
-          </FormControl>
-          <FormControl
-            variant="standard"
-            error={!!errors.birthDate}
-            className="input-field"
-          >
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="registration-form-container"
+      >
+        <div className="form-control">
+          <>
+            <FormControl
+              variant="standard"
+              error={!!errors.name}
+              className="input-field"
+            >
               <Controller
-                name="birthDate"
+                name="name"
                 control={control}
-                render={({ field }) => {
-                  const value = field.value ? dayjs(field.value) : null;
-                  return (
-                    <>
-                      <DesktopDatePicker
-                        label="Дата рождения"
-                        value={value} // Если значение пустое, показываем сегодня́шнюю дату
-                        onChange={(newValue: Dayjs | null) => {
-                          if (newValue) {
-                            field.onChange(newValue.format("YYYY-MM-DD"));
-                          } else {
-                            field.onChange("");
-                          }
-                        }}
-                      />
-                      <FormHelperText>
-                        {errors.birthDate?.message}
-                      </FormHelperText>
-                    </>
-                  );
-                }}
+                render={({ field }) => (
+                  <>
+                    <Input
+                      {...field}
+                      placeholder="Имя"
+                      disabled={registrating}
+                    />
+                    <FormHelperText>{errors.name?.message}</FormHelperText>
+                  </>
+                )}
               />
-            </LocalizationProvider>
-          </FormControl>
-          <FormControl
-            variant="standard"
-            error={!!errors.phone}
-            className="input-field"
-          >
-            <Controller
-              name="phone"
-              control={control}
-              render={({ field }) => (
-                <>
-                  <Input {...field} placeholder="Номер телефона" />
-                  <FormHelperText>{errors.phone?.message}</FormHelperText>
-                </>
-              )}
-            />
-          </FormControl>
-          <Button type="submit">Зарегистрироваться</Button>
-        </>
-      </div>
-    </form>
+            </FormControl>
+
+            <FormControl
+              variant="standard"
+              error={!!errors.email}
+              className="input-field"
+            >
+              <Controller
+                name="email"
+                control={control}
+                render={({ field }) => (
+                  <>
+                    <Input
+                      {...field}
+                      placeholder="Почта"
+                      disabled={registrating}
+                    />
+                    <FormHelperText>{errors.email?.message}</FormHelperText>
+                    <FormHelperText>
+                      Длина почты не больше 30 символов
+                    </FormHelperText>
+                  </>
+                )}
+              />
+            </FormControl>
+            <FormControl
+              variant="standard"
+              error={!!errors.password}
+              className="input-field"
+            >
+              <Controller
+                name="password"
+                control={control}
+                render={({ field }) => (
+                  <>
+                    <Input
+                      {...field}
+                      placeholder="Пароль"
+                      disabled={registrating}
+                    />
+                    <FormHelperText>{errors.password?.message}</FormHelperText>
+                    <FormHelperText>
+                      Пароль должен содержать не менее 8 символов, включать
+                      латинские буквы, цифры и специальный символ.
+                    </FormHelperText>
+                  </>
+                )}
+              />
+            </FormControl>
+            <FormControl
+              variant="standard"
+              error={!!errors.address}
+              className="input-field"
+            >
+              <Controller
+                name="address"
+                control={control}
+                render={({ field }) => (
+                  <>
+                    <Input
+                      {...field}
+                      placeholder="Адрес"
+                      disabled={registrating}
+                    />
+                    <FormHelperText>{errors.address?.message}</FormHelperText>
+                  </>
+                )}
+              />
+            </FormControl>
+            <FormControl
+              variant="standard"
+              error={!!errors.birthDate}
+              className="input-field"
+            >
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <Controller
+                  name="birthDate"
+                  control={control}
+                  render={({ field }) => {
+                    const value = field.value ? dayjs(field.value) : null;
+                    return (
+                      <>
+                        <DesktopDatePicker
+                          label="Дата рождения"
+                          value={value} // Если значение пустое, показываем сегодня́шнюю дату
+                          onChange={(newValue: Dayjs | null) => {
+                            if (newValue) {
+                              field.onChange(newValue.format("YYYY-MM-DD"));
+                            } else {
+                              field.onChange("");
+                            }
+                          }}
+                          disabled={registrating}
+                        />
+                        <FormHelperText>
+                          {errors.birthDate?.message}
+                        </FormHelperText>
+                      </>
+                    );
+                  }}
+                />
+              </LocalizationProvider>
+            </FormControl>
+            <FormControl
+              variant="standard"
+              error={!!errors.phone}
+              className="input-field"
+            >
+              <Controller
+                name="phone"
+                control={control}
+                render={({ field }) => (
+                  <>
+                    <Input {...field} placeholder="Номер телефона" />
+                    <FormHelperText>{errors.phone?.message}</FormHelperText>
+                  </>
+                )}
+                disabled={registrating}
+              />
+            </FormControl>
+            <Button
+              type="submit"
+              endIcon={
+                registrating ? (
+                  <CircularProgress size={15} color="warning" />
+                ) : null
+              }
+            >
+              Зарегистрироваться
+            </Button>
+          </>
+        </div>
+      </form>
+      <Modal open={succesModalOpened}>
+        <Box className="modal-content">
+          <Typography className="modal-message">
+            {registrationError
+              ? "Ошибка регистрации, попробуйте ещё раз."
+              : "Вы успешно зарегистрировались."}
+          </Typography>
+          <div className="modal-footer">
+            {registrationError ? (
+              <Button
+                onClick={() => {
+                  setSuccesModalOpened(false);
+                }}
+              >
+                Ок
+              </Button>
+            ) : (
+              <Button
+                onClick={() => {
+                  navigate("/sign-in");
+                  setSuccesModalOpened(false);
+                }}
+              >
+                Авторизоваться
+              </Button>
+            )}
+          </div>
+        </Box>
+      </Modal>
+    </>
   );
 }
