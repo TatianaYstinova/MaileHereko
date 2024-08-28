@@ -3,22 +3,20 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-
 import { useState } from "react";
-import { getMoviesByFilter } from '../../entities/movie/api';
+import { getMoviesByFilter } from "../../entities/movie/api";
 import Button from "@mui/material/Button";
 import { addToSimilarMovies } from "../../entities/moviesSelection/api";
-import {
-  SimiralMovie,
-} from "../../entities/moviesSelection";
+import { SimiralMovie } from "../../entities/moviesSelection";
 import {
   QueryObserverResult,
   RefetchOptions,
   RefetchQueryFilters,
   useMutation,
   useQuery,
-  
 } from "react-query";
+import "./AddSimilarMoviesModal.scss";
+import { buttomModalSimilarMovie } from "./style";
 
 interface AddSimilarMoviesModalProps {
   isOpenModalSelectionMovies: boolean;
@@ -41,10 +39,9 @@ export function AddSimilarMoviesModal({
   } | null>(null);
 
   const [searchWord, setSearchWord] = useState("");
-  
 
   const addMovieMutation = useMutation(addToSimilarMovies, {
-    onSuccess:  () => {
+    onSuccess: () => {
       refetch();
       handleCloseModalSelectionMovies();
     },
@@ -74,11 +71,9 @@ export function AddSimilarMoviesModal({
     >
       <Box className="modal-style-box">
         <Typography id="modal-modal-title">Введите название фильма:</Typography>
-        <Typography
-          className="picture-modal-title"
-          id="modal-modal-description"
-        >
+        <Typography id="modal-modal-description">
           <Autocomplete
+            className="picture-modal-title"
             value={value}
             onChange={(_, newValue) => setValue(newValue)}
             disablePortal
@@ -90,12 +85,8 @@ export function AddSimilarMoviesModal({
             renderInput={(params) => <TextField {...params} label="Movie" />}
           />
         </Typography>
-        <Button
-          className="addition"
-          variant="contained"
-          onClick={handleAddMovie}
-        >
-          Добавить
+        <Button onClick={handleAddMovie} sx={buttomModalSimilarMovie}>
+          Выбрать
         </Button>
       </Box>
     </Modal>
