@@ -15,7 +15,7 @@ import {
   SPECIAL_VALUE,
 } from "@openmoviedb/kinopoiskdev_client";
 import { getMoviesByFilter } from "../../entities/movie/api/get-by-filters";
-import "./SearchBoc.scss";
+import "./SearchBox.scss";
 import { useAppDispatch } from "../../store/hooks";
 import { homePageActions } from "../../Pages/HomePage/HomePageSlice";
 
@@ -25,9 +25,7 @@ interface SearchBoxProps {
 
 export type Genre = string;
 
-export const SearchBox: React.FC<SearchBoxProps> = ({
-  setFilters,
-}) => {
+export const SearchBox: React.FC<SearchBoxProps> = ({ setFilters }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isTop10Checked, setIsTop10Checked] = useState(false);
   const [isTop250Checked, setIsTop250Checked] = useState(false);
@@ -127,7 +125,7 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
     setRatingKp([1, 10]);
     setRatingIMDb([1, 10]);
     setSearchWord("");
-    setSelectedFilterLabel(null); // Очистить метку фильтра
+    setSelectedFilterLabel(null); 
   };
 
   const open = Boolean(anchorEl);
@@ -135,7 +133,7 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
 
   return (
     <div className="search-box-container">
-      <Button
+      <Button 
         variant="outlined"
         onClick={handleClick}
         className="filter-button"
