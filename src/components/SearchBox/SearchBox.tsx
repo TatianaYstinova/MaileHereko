@@ -26,36 +26,12 @@ interface SearchBoxProps {
 
 export type Genre = string;
 
-export const SearchBox: React.FC<SearchBoxProps> = ({
-  setFilters,
-}) => {
-  
+export const SearchBox: React.FC<SearchBoxProps> = ({ setFilters }) => {
   const [isTop10Checked, setIsTop10Checked] = useState(false);
   const [isTop250Checked, setIsTop250Checked] = useState(false);
   const [searchWord, setSearchWord] = useState<string>();
   const [isSeriesChecked, setIsSeriesChecked] = useState(false);
   const [selectedGenres, setSelectedGenres] = useState<Genre[]>([]);
-  const [ratingKp, setRatingKp] = useState<number[]>([1, 10]);
-  const [ratingIMDb, setRatingIMDb] = useState<number[]>([1, 10]);
-
-  const [selectedFilterLabel, setSelectedFilterLabel] = useState<string | null>(
-    null
-  );
-
-  
-
- 
-
-  const updateFilterLabel = () => {
-    const filters: string[] = [];
-
-    if (isTop10Checked) filters.push("Топ 10");
-    if (isTop250Checked) filters.push("Топ 250");
-    if (isSeriesChecked) filters.push("Сериалы");
-    selectedGenres.forEach((genre) => filters.push(genre));
-
-    setSelectedFilterLabel(filters.length > 0 ? filters.join(", ") : null);
-  };
 
   const dispatch = useAppDispatch();
 
@@ -65,9 +41,6 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
       limit: 8,
       name: searchWord || undefined,
       isSeries: isSeriesChecked,
-      ["genres.name"]: selectedGenres,
-      ["rating.kp"]: ratingKp.join("-"),
-      ["rating.imdb"]: ratingIMDb.join("-"),
     };
     if (isTop10Checked) {
       searchFilter.top10 = SPECIAL_VALUE.NOT_NULL;
@@ -94,46 +67,18 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
       const newGenres = prev.includes(genre)
         ? prev.filter((item) => item !== genre)
         : [...prev, genre];
-      updateFilterLabel();
+
       return newGenres;
     });
   };
 
-  const handleSliderChangeRatingKp = (
-    _event: Event,
-    value: number | number[],
-    _activeThumb: number
-  ) => {
-    const newValue = Array.isArray(value) ? value : [value];
-    setRatingKp(newValue);
-  };
-  const handleSliderChangeRatingIMDb = (
-    _event: Event,
-    value: number | number[],
-    _activeThumb: number
-  ) => {
-    const newValue = Array.isArray(value) ? value : [value];
-    setRatingIMDb(newValue);
-  };
-
-  const clearFilters = () => {
-    setIsTop10Checked(false);
-    setIsTop250Checked(false);
-    setIsSeriesChecked(false);
-    setSelectedGenres([]);
-    setRatingKp([1, 10]);
-    setRatingIMDb([1, 10]);
-    setSearchWord("");
-    setSelectedFilterLabel(null); 
-  };
-
-  
-
   return (
     <div className="search-box-container">
-      <Filters setFilters={function (param: Filter<MovieFields>): void {
-        throw new Error("Function not implemented.");
-      } }/>
+      <Filters
+        setFilters={function (param: Filter<MovieFields>): void {
+          throw new Error("Function not implemented.");
+        }}
+      />
       {/* <Button
         variant="outlined"
         onClick={handleClick}
@@ -268,19 +213,6 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
           Поиск
         </Button>
       </Grid>
-      {selectedFilterLabel && (
-        <div className="selected-filter">
-          <Typography
-            variant="subtitle1"
-            sx={{ widows: "300px", color: "white" }}
-          >
-            {selectedFilterLabel}
-            <Button onClick={clearFilters} style={{ marginLeft: "8px" }}>
-              ✖
-            </Button>
-          </Typography>
-        </div>
-      )}
     </div>
   );
 };

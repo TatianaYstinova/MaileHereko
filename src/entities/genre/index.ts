@@ -1,1 +1,1 @@
-export { useGenres } from './get-geres';
+export { usePossibleFilterValues } from './get-geres';

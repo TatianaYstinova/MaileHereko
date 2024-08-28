@@ -1,20 +1,23 @@
 import { useQuery } from "react-query"
 import { getGenresApi } from "./api"
 import { useDispatch, useSelector } from "react-redux"
-import { cataloguePageActions, genreSelector } from "../../Pages/CatalogPage/CatalogPageSlice";
+import { cataloguePageActions, possibleFilterValuesSelector } from "../../Pages/CatalogPage/CatalogPageSlice";
+import { RootState } from "../../store/store";
 
-export const useGenres = () => {
-    const dispatch = useDispatch();
+export const usePossibleFilterValues = (filterFieldName: string) => {
+  const dispatch = useDispatch();
 
-    useQuery(['genres'], getGenresApi, {
-        onSuccess: (response) => {
-            if (response.data) {
-                dispatch(cataloguePageActions.setGenres({ genres: response.data }))
-            }
-        }
-    })
+  useQuery(['filterFieldName', filterFieldName], () => getGenresApi(filterFieldName), {
+    onSuccess: (response) => {
+      if (response.data) {
+        dispatch(cataloguePageActions.setPossibleFilterValues({
+          filterFieldName, possibleValues: response.data || []
+        }))
+      }
+    }
+  })
 
-    const genres = useSelector(genreSelector);
+  const possibleFilterValues = useSelector((state: RootState) => (possibleFilterValuesSelector(state, filterFieldName)));
 
-    return { genres }
+  return { possibleFilterValues }
 }

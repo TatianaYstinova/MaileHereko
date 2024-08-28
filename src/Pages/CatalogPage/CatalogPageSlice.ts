@@ -1,32 +1,30 @@
-import { MovieDtoV13 } from "@openmoviedb/kinopoiskdev_client";
+import { PossibleValueDto } from "@openmoviedb/kinopoiskdev_client";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Genre } from "../../entities/genre/api";
 import { RootState } from "../../store/store";
 
 export interface CataloguePageState {
-  genres: Genre[];
+  [filterFieldName: string]: PossibleValueDto[];
 }
 
 export interface SetGenresActionPayload {
-  genres:Genre[]
+  possibleValues: PossibleValueDto[];
+  filterFieldName: string;
 }
 
-const initialState: CataloguePageState = {
-  genres:[]
-}
+const initialState: CataloguePageState = {}
+
 const cataloguePageSlice = createSlice({
   name: 'catalog',
   initialState,
   reducers: {
-    setGenres(state, action:PayloadAction<SetGenresActionPayload>){
-      const {genres} = action.payload;
-      state.genres = genres;
-    } 
+    setPossibleFilterValues(state, action: PayloadAction<SetGenresActionPayload>) {
+      const { filterFieldName, possibleValues } = action.payload;
+      state[filterFieldName] = possibleValues;
+    }
   }
 })
 export const cataloguePageActions = cataloguePageSlice.actions;
 
 export const cataloguePageReducer = cataloguePageSlice.reducer;
 
-
-export const genreSelector = (state:RootState)=>state.catalogPage.genres;
+export const possibleFilterValuesSelector = (state: RootState, filterFieldName: string): PossibleValueDto[] | undefined => state.catalogPage[filterFieldName];

@@ -1,14 +1,15 @@
 import { CatalogCard } from "../../components/CatalogCard/CatalogCard";
-import { useGenres } from "../../entities/genre";
+import { usePossibleFilterValues } from "../../entities/genre";
 import "./CatalogPage.scss";
 
 export const CatalogPage = () => {
-  const { genres } = useGenres();
+  const { possibleFilterValues: genres } =
+    usePossibleFilterValues("genres.name");
 
   return (
-    <div className="catalogue-page" >
-      {genres.map((genre) => (
-      <CatalogCard genre={genre.name} />
+    <div className="catalogue-page">
+      {genres?.map((genre) => (
+        <CatalogCard genre={genre.name} />
       ))}
     </div>
   );
