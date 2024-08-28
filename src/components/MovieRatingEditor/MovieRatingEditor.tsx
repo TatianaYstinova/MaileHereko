@@ -1,6 +1,6 @@
 import { Button, Popover, Rating } from "@mui/material";
 import Star from "../../assets/star.svg";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./MovieRatingEditor.scss";
 import {
   FilmScore,
