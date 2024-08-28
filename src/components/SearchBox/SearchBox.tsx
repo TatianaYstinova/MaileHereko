@@ -18,6 +18,7 @@ import { getMoviesByFilter } from "../../entities/movie/api/get-by-filters";
 import "./SearchBoc.scss";
 import { useAppDispatch } from "../../store/hooks";
 import { homePageActions } from "../../Pages/HomePage/HomePageSlice";
+import { Filters } from "../Filter/Filter";
 
 interface SearchBoxProps {
   setFilters: (param: Filter<MovieFields>) => void;
@@ -28,7 +29,7 @@ export type Genre = string;
 export const SearchBox: React.FC<SearchBoxProps> = ({
   setFilters,
 }) => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  
   const [isTop10Checked, setIsTop10Checked] = useState(false);
   const [isTop250Checked, setIsTop250Checked] = useState(false);
   const [searchWord, setSearchWord] = useState<string>();
@@ -41,13 +42,9 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
     null
   );
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
+  
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+ 
 
   const updateFilterLabel = () => {
     const filters: string[] = [];
@@ -130,12 +127,14 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
     setSelectedFilterLabel(null); 
   };
 
-  const open = Boolean(anchorEl);
-  const id = open ? "simple-popover" : undefined;
+  
 
   return (
     <div className="search-box-container">
-      <Button
+      <Filters setFilters={function (param: Filter<MovieFields>): void {
+        throw new Error("Function not implemented.");
+      } }/>
+      {/* <Button
         variant="outlined"
         onClick={handleClick}
         className="filter-button"
@@ -247,7 +246,7 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
             />
           </Grid>
         </Grid>
-      </Popover>
+      </Popover> */}
       <Grid className="search-word">
         <TextField
           variant="outlined"

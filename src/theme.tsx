@@ -4,7 +4,6 @@ const theme = createTheme({
   typography: {
     fontFamily: "Poppins, sans-serif",
   },
-
   components: {
     MuiTypography: {
       styleOverrides: {
@@ -13,7 +12,6 @@ const theme = createTheme({
         },
       },
     },
-
     MuiCard: {
       styleOverrides: {
         root: {
@@ -53,6 +51,18 @@ const theme = createTheme({
         },
       },
     },
+    MuiCheckbox: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "transparent",
+          border: "none",
+          "&:hover": {
+            border: "none",
+          },
+        },
+      },
+    },
+    MuiSvgIcon: { styleOverrides: { root: { color: "#7B6EF6" } } },
     MuiTextField: {
       styleOverrides: {
         root: {
@@ -107,7 +117,7 @@ const theme = createTheme({
           color: "#ffffff",
         },
       },
-    }, 
+    },
   },
 });
 
