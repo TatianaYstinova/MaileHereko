@@ -15,7 +15,7 @@ import {
   SPECIAL_VALUE,
 } from "@openmoviedb/kinopoiskdev_client";
 import { getMoviesByFilter } from "../../entities/movie/api/get-by-filters";
-import "./SearchBoc.scss";
+import "./SearchBox.scss";
 import { useAppDispatch } from "../../store/hooks";
 import { homePageActions } from "../../Pages/HomePage/HomePageSlice";
 import { Filters } from "../Filter/Filter";

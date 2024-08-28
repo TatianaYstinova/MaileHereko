@@ -70,7 +70,7 @@ export const HomePage = () => {
             {" "}
             Все{" "}
           </Typography>
-          <Typography component="span">
+          <Typography className="quantity" component="span">
             {" "}
             {`(${moviesData?.totalCount})`}
           </Typography>
@@ -93,7 +93,7 @@ export const HomePage = () => {
           );
         })}
       </Grid>
-      {movies.length < moviesData.totalCount && ( 
+      {movies.length < moviesData.totalCount && (
         <ButtonBase sx={{ mt: 4 }} onClick={handleShowMore}>
           Показать еще
         </ButtonBase>

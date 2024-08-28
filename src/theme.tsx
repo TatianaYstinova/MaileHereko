@@ -31,6 +31,7 @@ const theme = createTheme({
     MuiLink: {
       defaultProps: {
         color: "#ffffff",
+        fontFamily: "Poppins, sans-serif",
       },
     },
     MuiButtonBase: {
@@ -39,8 +40,8 @@ const theme = createTheme({
           border: "2px solid #7B6EF6",
           fontFamily: "Poppins, sans-serif",
           borderRadius: "12px",
-          color: "white",
           fontWeight: 400,
+          color:"#FFFFFF",
           fontSize: "16px",
           lineHight: "24px",
           backgroundColor: "#7B6EF6",
@@ -68,7 +69,7 @@ const theme = createTheme({
         root: {
           width: "100%",
           display: "flex",
-          border: "1px solid #ffffff",
+          borderRadius: "12px",
         },
       },
     },
@@ -82,11 +83,18 @@ const theme = createTheme({
     MuiGrid: {
       styleOverrides: {
         root: {
-          justifyContent: "center",
+          justifyContent: "space-between",
           maxWidth: "1200px",
           margin: "auto",
           position: "relative",
           alignItems: "center",
+        },
+      },
+    },
+    MuiSvgIcon: {
+      styleOverrides: {
+        root: {
+          color: "#f9f9f9",
         },
       },
     },
@@ -101,6 +109,8 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           color: "#ffffff",
+          display: "flex",
+          background: "transparent",
         },
       },
     },
