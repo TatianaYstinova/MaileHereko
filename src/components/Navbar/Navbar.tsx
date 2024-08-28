@@ -3,11 +3,13 @@ import "../../Pages/HomePage/HomePage.scss";
 import Link from "@mui/material/Link";
 import logo from "../../assets/logoImg/Frame 82.png";
 import "./Navbar.scss";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { appActions } from "../../store";
+import { isUathorizedSelector } from "../../store";
 
 export const Navbar = () => {
   const dispatch = useDispatch();
+  const isAuthorized = useSelector(isUathorizedSelector);
 
   const handleLogout = () => {
     dispatch(appActions.setIsAuthorized({ isAuthorized: false }));
@@ -26,17 +28,20 @@ export const Navbar = () => {
         <Link sx={{ color: "white" }} href="/catalog" underline="hover">
           Каталог фильмов
         </Link>
-        <Link sx={{ color: "white" }} href="/sign-in" underline="hover">
-          Вход
-        </Link>
-        <Link
-          sx={{ color: "white" }}
-          href="/sign-in"
-          underline="hover"
-          onClick={handleLogout}
-        >
-          Выход
-        </Link>
+        {isAuthorized ? (
+          <Link
+            sx={{ color: "white" }}
+            href="/"
+            underline="hover"
+            onClick={handleLogout}
+          >
+            Выход
+          </Link>
+        ) : (
+          <Link sx={{ color: "white" }} href="/sign-in" underline="hover">
+            Вход
+          </Link>
+        )}
       </div>
     </div>
   );
