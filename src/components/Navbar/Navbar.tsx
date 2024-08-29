@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { appActions } from "../../store";
 import { isUathorizedSelector } from "../../store";
 import { Link } from "react-router-dom";
+import { Typography } from "@mui/material";
 
 export const Navbar = () => {
   const dispatch = useDispatch();
@@ -22,19 +23,26 @@ export const Navbar = () => {
     <div className="header-container">
       <img className="logo" src={logo} alt="picture logo" />
       <div className="menu-navigation">
-        <Link style={{ color: "white" }} to="/">
-          Главная
+        <Link style={{ color: "white", textDecoration: "none" }} to="/">
+          <Typography>Главная</Typography>
         </Link>
-        <Link style={{ color: "white" }} to="/catalog">
-          Каталог фильмов
+        <Link style={{ color: "white", textDecoration: "none" }} to="/catalog">
+          <Typography>Каталог фильмов</Typography>
         </Link>
         {isAuthorized ? (
-          <Link style={{ color: "white" }} to="/" onClick={handleLogout}>
-            Выход
+          <Link
+            style={{ color: "white", textDecoration: "none" }}
+            to="/"
+            onClick={handleLogout}
+          >
+            <Typography>Выход</Typography>
           </Link>
         ) : (
-          <Link style={{ color: "white" }} to="/sign-in">
-            Вход
+          <Link
+            style={{ color: "white", textDecoration: "none" }}
+            to="/sign-in"
+          >
+            <Typography>Вход</Typography>
           </Link>
         )}
       </div>

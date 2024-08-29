@@ -183,6 +183,7 @@ export function RegistrationComponent() {
               />
             </FormControl>
             <FormControl
+              sx={{ color: "white" }}
               variant="standard"
               error={!!errors.birthDate}
               className="input-field"
@@ -196,8 +197,9 @@ export function RegistrationComponent() {
                     return (
                       <>
                         <DesktopDatePicker
+                          sx={{ color: "white" }}
                           label="Дата рождения"
-                          value={value} // Если значение пустое, показываем сегодня́шнюю дату
+                          value={value}
                           onChange={(newValue: Dayjs | null) => {
                             if (newValue) {
                               field.onChange(newValue.format("YYYY-MM-DD"));

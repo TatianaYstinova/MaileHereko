@@ -2,7 +2,6 @@ import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
 import { useState } from "react";
 import { getMoviesByFilter } from "../../entities/movie/api";
 import Button from "@mui/material/Button";
@@ -69,10 +68,19 @@ export function AddSimilarMoviesModal({
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <Box className="modal-style-box">
-        <Typography id="modal-modal-title">Введите название фильма:</Typography>
-        <Typography id="modal-modal-description">
+      <Box
+        className="modal-style-box"
+        style={{ backgroundColor: "rgba(18, 24, 41, 0.8)" }}
+      >
+        <div id="modal-modal-title" style={{ color: "white" }}>
+          Введите название фильма:
+        </div>
+        <div
+          id="modal-modal-description"
+          style={{ backgroundColor: "rgba(18, 24, 41, 0.8)" }}
+        >
           <Autocomplete
+            sx={{ color: "black" }}
             className="picture-modal-title"
             value={value}
             onChange={(_, newValue) => setValue(newValue)}
@@ -82,9 +90,12 @@ export function AddSimilarMoviesModal({
               .filter((movie) => !!movie.name)
               .map((movie) => ({ id: movie.id, name: movie.name }))}
             getOptionLabel={(option) => option.name ?? ""}
-            renderInput={(params) => <TextField {...params} label="Movie" />}
+            renderInput={(params) => (
+              <TextField sx={{ color: "black" }} {...params} label="Movie" />
+            )}
           />
-        </Typography>
+        </div>
+
         <Button onClick={handleAddMovie} sx={buttomModalSimilarMovie}>
           Выбрать
         </Button>

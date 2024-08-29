@@ -10,6 +10,7 @@ import { Link } from "react-router-dom";
 import { homePageActions } from "./HomePageSlice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { RootState } from "../../store/store";
+import { Filters } from "../../components/Filter/Filter";
 
 export type moviesData = {
   totalCount: number;
@@ -59,13 +60,20 @@ export const HomePage = () => {
 
   return (
     <div>
-      <SearchBox
-        setFilters={(newFilters) =>
-          dispatch(homePageActions.setFilter(newFilters))
-        }
-      />
+      <div className="container">
+        <Filters
+          setFilters={(newFilters) =>
+            dispatch(homePageActions.setFilter(newFilters))
+          }
+        />
+        <SearchBox
+          setFilters={(newFilters) =>
+            dispatch(homePageActions.setFilter(newFilters))
+          }
+        />
+      </div>
       <Grid container spacing={3} columns={{ xs: 4, md: 12 }}>
-        <Grid className="text- button- container" item xs={12} md={12}>
+        <Grid className="totalCount" item xs={12} md={12}>
           <Typography className="text" component="span">
             {" "}
             Все{" "}

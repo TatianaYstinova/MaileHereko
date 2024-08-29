@@ -1,9 +1,6 @@
 import { createTheme } from "@mui/material/styles";
 
 const theme = createTheme({
-  typography: {
-    fontFamily: "Poppins, sans-serif",
-  },
   components: {
     MuiTypography: {
       styleOverrides: {
@@ -41,7 +38,7 @@ const theme = createTheme({
           fontFamily: "Poppins, sans-serif",
           borderRadius: "12px",
           fontWeight: 400,
-          color:"#FFFFFF",
+          color: "#FFFFFF",
           fontSize: "16px",
           lineHight: "24px",
           backgroundColor: "#7B6EF6",
@@ -91,13 +88,7 @@ const theme = createTheme({
         },
       },
     },
-    MuiSvgIcon: {
-      styleOverrides: {
-        root: {
-          color: "#f9f9f9",
-        },
-      },
-    },
+
     MuiInputBase: {
       styleOverrides: {
         root: {
@@ -110,7 +101,6 @@ const theme = createTheme({
         root: {
           color: "#ffffff",
           display: "flex",
-          background: "transparent",
         },
       },
     },
@@ -125,6 +115,20 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           color: "#ffffff",
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          borderRadius: "24px 24px 24px 24px",
+        },
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          color: ' "#ffffff"',
         },
       },
     },

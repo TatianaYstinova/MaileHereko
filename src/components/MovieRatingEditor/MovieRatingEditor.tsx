@@ -1,4 +1,4 @@
-import { Button, Popover, Rating } from "@mui/material";
+import { Button, Modal, Popover, Rating, Typography } from "@mui/material";
 import Star from "../../assets/star.svg";
 import { useEffect, useState } from "react";
 import "./MovieRatingEditor.scss";
@@ -27,6 +27,7 @@ export const MovieRatingEditor: React.FC<MovieRatingEditorProps> = ({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [ratingValue, setRatingValue] = useState<number | null>(null);
   const [userId, setUserId] = useState<string>("");
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -77,10 +78,24 @@ export const MovieRatingEditor: React.FC<MovieRatingEditorProps> = ({
     event.preventDefault();
     event.stopPropagation();
     setAnchorEl(event.currentTarget);
+    if (!isAuthorized) {
+      setModalOpen(true);
+    } else {
+      setAnchorEl(event.currentTarget);
+    }
   };
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+  const handleClosePopover = () => {
+    setAnchorEl(null);
+  };
+
+  const handleCloseModal = (event: React.MouseEvent<HTMLElement>) => {
+    setModalOpen(false);
+    event.preventDefault();
+    event.stopPropagation();
   };
 
   const handleRatingChange = (
@@ -165,6 +180,17 @@ export const MovieRatingEditor: React.FC<MovieRatingEditorProps> = ({
           />
         </Popover>
       )}
+      <Modal open={modalOpen} onClose={handleCloseModal}>
+        <div className="modal-content">
+          <Typography variant="h6" component="h2">
+            Вы не авторизованы
+          </Typography>
+          <Typography>
+            Пожалуйста, войдите в свою учетную запись, чтобы оставить оценку.
+          </Typography>
+          <Button onClick={handleCloseModal}>Закрыть</Button>
+        </div>
+      </Modal>
     </>
   );
 };

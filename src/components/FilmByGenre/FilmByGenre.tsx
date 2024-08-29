@@ -5,7 +5,7 @@ import { Filter, MovieFields } from "@openmoviedb/kinopoiskdev_client";
 import { useInfiniteQuery } from "react-query";
 import { getMoviesByFilter } from "../../entities/movie";
 import { FilmPreviewCard } from "../FilmPreviewCard/FilmPreviewCard";
-import './FilmByGenre.scss'
+import "./FilmByGenre.scss";
 
 const api = ({
   pageParam,
@@ -71,8 +71,10 @@ export const FilmByGenre = () => {
             </Link>
           ))
         )}
+        <div className="button-films-by-genre">
+          <Button onClick={() => fetchNextPage()}>Показать ещё</Button>
+        </div>
       </div>
-      <Button onClick={() => fetchNextPage()}>Показать ещё</Button>
     </>
   );
 };
