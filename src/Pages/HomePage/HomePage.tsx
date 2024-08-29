@@ -1,8 +1,6 @@
 import "./HomePage.scss";
 import { useEffect } from "react";
-import {
-  MovieDtoV13,
-} from "@openmoviedb/kinopoiskdev_client";
+import { MovieDtoV13 } from "@openmoviedb/kinopoiskdev_client";
 import { getMoviesByFilter } from "../../entities/movie/api/get-by-filters";
 import { FilmPreviewCard } from "../../components/FilmPreviewCard/FilmPreviewCard";
 import { ButtonBase, Grid, Typography } from "@mui/material";
@@ -11,22 +9,27 @@ import { SearchBox } from "../../components/SearchBox/SearchBox";
 import { Link } from "react-router-dom";
 import { homePageActions } from "./HomePageSlice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { RootState } from "../../store/store";
+import { Filters } from "../../components/Filter/Filter";
 
 export type moviesData = {
   totalCount: number;
   pages: number;
 };
 
+const moviesDataSelector = (state: RootState) => state.homePage.moviesData;
+const moviesSelector = (state: RootState) => state.homePage.movies;
+const filterSelector = (state: RootState) => state.homePage.filter;
+
 export const HomePage = () => {
-  const moviesData = useAppSelector((state) => state.homePage.moviesData);
-  const movies = useAppSelector((state) => state.homePage.movies);
-  const filter = useAppSelector((state) => state.homePage.filter);
+  const moviesData = useAppSelector(moviesDataSelector);
+  const movies = useAppSelector(moviesSelector);
+  const filter = useAppSelector(filterSelector);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     getMoviesByFilterHandler();
   }, [filter]);
-
 
   const getMoviesByFilterHandler = async () => {
     const response = await getMoviesByFilter(filter);
@@ -40,15 +43,14 @@ export const HomePage = () => {
       dispatch(homePageActions.setMoviesData(newMoviesData));
 
       if (filter.page === 1) {
-        dispatch(homePageActions.setMovies(response.data.docs)); // Первоначальная загрузка
+        dispatch(homePageActions.setMovies(response.data.docs));
       } else {
-        dispatch(homePageActions.addMovies(response.data.docs)); // Добавляем новые фильмы
+        dispatch(homePageActions.addMovies(response.data.docs));
       }
     }
   };
 
   const handleShowMore = () => {
-    // Увеличиваем страницу фильтра
     const newFilter = {
       ...filter,
       page: Number(filter.page) + 1,
@@ -56,12 +58,22 @@ export const HomePage = () => {
     dispatch(homePageActions.setFilter(newFilter));
   };
 
-
   return (
     <div>
-      <SearchBox setFilters={(newFilters) => dispatch(homePageActions.setFilter(newFilters))} />
+      <div className="container">
+        <Filters
+          setFilters={(newFilters) =>
+            dispatch(homePageActions.setFilter(newFilters))
+          }
+        />
+        <SearchBox
+          setFilters={(newFilters) =>
+            dispatch(homePageActions.setFilter(newFilters))
+          }
+        />
+      </div>
       <Grid container spacing={3} columns={{ xs: 4, md: 12 }}>
-        <Grid className="text- button- container" item xs={12} md={12}>
+        <Grid className="totalCount" item xs={12} md={12}>
           <Typography className="text" component="span">
             {" "}
             Все{" "}
@@ -71,7 +83,7 @@ export const HomePage = () => {
             {`(${moviesData?.totalCount})`}
           </Typography>
         </Grid>
-        {movies?.map((movie: MovieDtoV13) => {
+        {movies.map((movie: MovieDtoV13) => {
           return (
             <Grid key={movie.id} item md={3}>
               <Link to={`/movie/${movie.id}`}>

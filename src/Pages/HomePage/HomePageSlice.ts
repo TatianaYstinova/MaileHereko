@@ -32,7 +32,6 @@ const movieSlice = createSlice({
       state.moviesData = action.payload;
     },
     setMovies(state, action: PayloadAction<MovieDtoV13[]>) {
-      
       state.movies = action.payload;
     },
     addMovies(state, action: PayloadAction<MovieDtoV13[]>) {

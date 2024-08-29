@@ -3,9 +3,6 @@ import { MovieDtoV13 } from '@openmoviedb/kinopoiskdev_client';
 import React from 'react';
 import star from '../../assets/star.png';
 
-
-
-
 export const FilmCard: React.FC<MovieDtoV13> = ({
   rating,
   slogan,

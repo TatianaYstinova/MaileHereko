@@ -1,3 +1,8 @@
+.registration-form-container {
+  display: flex;
+  justify-content: center;
+}
+
 .form-control {
   display: flex;
   flex-direction: column;
@@ -5,6 +10,15 @@
   justify-content: center;
   height: 500px;
   gap: 35px;
+  position: relative;
+  top: 50px;
+  width: 50%;
+  min-width: 300px;
+}
+
+.input-field {
+  position: relative;
+  width: 100%;
 }
 
 button {
@@ -15,4 +29,32 @@ button {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.modal-content {
+  height: 500px;
+  width: 800px;
+  position:absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+}
+
+.modal-message {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-footer {
+  height: 100px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

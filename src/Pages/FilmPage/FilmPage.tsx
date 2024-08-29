@@ -1,12 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import "./FilmPage.scss";
 
 import Button from "@mui/material/Button";
 
-import { TOKEN } from "../../shared/kp-client";
 import { FilmCard } from "../../components/FilmCard";
-import {  getMovieById } from "../../entities/movie";
+import { getMovieById } from "../../entities/movie";
 import {
   getFavorites,
   addToFavorites,
@@ -29,21 +28,35 @@ import Skeleton from "@mui/material/Skeleton";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { filmPageActions } from "./FilmPageSlice";
 import { getMoviesByFilter } from "../../entities/movie/api";
+import { useSelector } from "react-redux";
+import { isUathorizedSelector } from "../../store";
+import { USER_ID_KEY } from "../../entities/user";
+import { jwtDecode } from "jwt-decode";
 
 export const FilmPage = () => {
   const { id } = useParams();
   const queryClient = useQueryClient();
-  const userId = TOKEN;
+  const [userId, setUserId] = useState<string>("");
   const [isOpenModalFavoriteMovie, setIsOpenModalFavoriteMovie] =
     useState(false);
   const [isOpenModalSelectionMovies, setIsOpenModalSelectionMovies] =
     useState(false);
   const dispatch = useAppDispatch();
+  const [alertMessage, setAlertMessage] = useState("");
 
-  //  данные из состояния Redux
   const movie = useAppSelector((state) => state.filmPage.movie);
   const favorites = useAppSelector((state) => state.filmPage.favorites);
-  const similarMovies = useAppSelector((state)=>state.filmPage.similarMovies)
+  const similarMovies = useAppSelector((state) => state.filmPage.similarMovies);
+  const isAuthorized = useSelector(isUathorizedSelector);
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+
+    if (token) {
+      const decoded = jwtDecode<any>(token);
+      setUserId(decoded[USER_ID_KEY]);
+    }
+  }, [setUserId]);
 
   const { isLoading: isLoadingMovie } = useQuery(
     ["movie", id],
@@ -76,7 +89,6 @@ export const FilmPage = () => {
       ({ favoritedMovieId }) => favoritedMovieId === movie?.data?.id
     ) || null;
 
-  
   const addFavoriteMutation = useMutation(addToFavorites, {
     onSuccess: () => {
       queryClient.invalidateQueries(["favorites", userId]);
@@ -92,6 +104,12 @@ export const FilmPage = () => {
   });
 
   const handleToggleFavorite = () => {
+    if (!isAuthorized) {
+      setAlertMessage(
+        "Добавить фильм в 'Избранное' может только авторизованный пользователь. Авторизуйтесь пожалуйста."
+      );
+      return;
+    }
     if (isInFavorites) {
       if (favoriteMovie?.id !== undefined) {
         deleteFavoriteMutation.mutate({ id: favoriteMovie.id });
@@ -101,21 +119,21 @@ export const FilmPage = () => {
 
       if (favoritedMovieId !== undefined) {
         addFavoriteMutation.mutate({
-          userId: TOKEN,
+          userId,
           favoritedMovieId: favoritedMovieId,
         });
       }
     }
   };
 
-  const {  refetch } = useQuery(
+  const { refetch } = useQuery(
     "similarMoviesFromMyServer",
     () => getSimilarMovies(Number(movie?.data?.id)),
     {
       enabled: !!movie,
-      onSuccess:(data)=>{
-        dispatch(filmPageActions.setSimilarMovies({similarMovies:data}))
-      }
+      onSuccess: (data) => {
+        dispatch(filmPageActions.setSimilarMovies({ similarMovies: data }));
+      },
     }
   );
 
@@ -137,8 +155,18 @@ export const FilmPage = () => {
   const movieId = movie?.data?.id;
   const isMovieIdValid = typeof movieId === "number";
 
+  const handleAddToSelections = () => {
+    if (!isAuthorized) {
+      setAlertMessage(
+        "Добавить фильм в 'Подборки фильмов' может только авторизованный пользователь. Авторизуйтесь пожалуйста."
+      );
+      return;
+    }
+    setIsOpenModalSelectionMovies(true);
+  };
+
   if (isLoadingMovie) {
-    return <div className="download">Загрузка...</div>; 
+    return <div className="download">Загрузка...</div>;
   }
 
   return (
@@ -192,6 +220,23 @@ export const FilmPage = () => {
               </Typography>
             </Box>
           </Modal>
+          {alertMessage && (
+            <Modal
+              open={!!alertMessage}
+              onClose={() => setAlertMessage("")}
+              aria-labelledby="alert-modal-title"
+              aria-describedby="alert-modal-description"
+            >
+              <Box className="modal-style-box">
+                <Typography id="alert-modal-title" variant="h6">
+                  Внимание
+                </Typography>
+                <Typography id="alert-modal-description">
+                  {alertMessage}
+                </Typography>
+              </Box>
+            </Modal>
+          )}
         </div>
       </div>
       <div className="container-selection-movies">
@@ -208,10 +253,11 @@ export const FilmPage = () => {
         <Button
           className="add-film-to-selections "
           variant="contained"
-          onClick={() => setIsOpenModalSelectionMovies(true)}
+          onClick={handleAddToSelections}
         >
           Добавить фильм
         </Button>
+
         {movie && isMovieIdValid && (
           <AddSimilarMoviesModal
             refetch={refetch}

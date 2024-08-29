@@ -1,12 +1,15 @@
-interface RegistrationData {
-    email: string;
-    password: string;
+export interface RegistrationData {
     name: string;
+    email: string;
+    phone: string,
+    address: string,
+    birthDate: string,
+    password: string;
 }
 
 export const registration = async (parameters: RegistrationData) => {
     const response = await fetch(
-        'http://localhost:777/users',
+        'https://194.87.210.5:10000/api/users/sign-up',
         {
             method: 'POST',
             headers: {

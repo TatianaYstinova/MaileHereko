@@ -1,43 +1,50 @@
 import "../../Pages/HomePage/HomePage.scss";
-import Link from "@mui/material/Link";
+
 import logo from "../../assets/logoImg/Frame 82.png";
 import "./Navbar.scss";
-import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { appActions } from "../../store";
+import { isUathorizedSelector } from "../../store";
+import { Link } from "react-router-dom";
+import { Typography } from "@mui/material";
 
 export const Navbar = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const dispatch = useDispatch();
+  const isAuthorized = useSelector(isUathorizedSelector);
 
-  useEffect(() => {
-    const user = localStorage.getItem("user");
-    if (user) {
-      setIsLoggedIn(true);
-    }
-  }, []);
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    setIsLoggedIn(false);
+    dispatch(appActions.setIsAuthorized({ isAuthorized: false }));
+
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
   };
+
   return (
     <div className="header-container">
       <img className="logo" src={logo} alt="picture logo" />
       <div className="menu-navigation">
-        <Link sx={{ color: "white" }} href="#" underline="hover">
-          Фильмы
+        <Link style={{ color: "white", textDecoration: "none" }} to="/">
+          <Typography>Главная</Typography>
         </Link>
-        <Link sx={{ color: "white" }} href="#" underline="hover">
-          Каталог фильмов
+        <Link style={{ color: "white", textDecoration: "none" }} to="/catalog">
+          <Typography>Каталог фильмов</Typography>
         </Link>
-        <Link sx={{ color: "white" }} href="sing-in" underline="hover">
-          Вход/Регистрация
-        </Link>
-        <Link
-          sx={{ color: "white" }}
-          href="sing-in"
-          underline="hover"
-          onClick={handleLogout}
-        >
-          Выход
-        </Link>
+        {isAuthorized ? (
+          <Link
+            style={{ color: "white", textDecoration: "none" }}
+            to="/"
+            onClick={handleLogout}
+          >
+            <Typography>Выход</Typography>
+          </Link>
+        ) : (
+          <Link
+            style={{ color: "white", textDecoration: "none" }}
+            to="/sign-in"
+          >
+            <Typography>Вход</Typography>
+          </Link>
+        )}
       </div>
     </div>
   );
